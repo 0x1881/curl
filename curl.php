@@ -188,7 +188,7 @@ class Curl
             $this->setError("Error setHeader: ", $header);
         }
 
-        if (isset($this->req->headers) && (\is_countable($this->req->headers) && count($this->req->headers) > 0)) {
+        if (isset($this->req->headers) && (is_array($this->req->headers) && count($this->req->headers) > 0)) {
             $this->setOpt(\CURLOPT_HTTPHEADER, $this->req->headers);
         } else {
             unset($this->req->headers);
