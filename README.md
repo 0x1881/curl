@@ -3,7 +3,7 @@ Bot yapımı için test amaçlı kodlanmış bir curl sınıfıdır.
 
 # Kurulum
 ```
-composer require 0x1881/curl:dev-main
+composer require 0x1881/curl
 ```
 
 # Kullanımı
