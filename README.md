@@ -1,6 +1,6 @@
 # Curl Repo
 
-Bot yapımı için test amaçlıdır.
+Bot yapımı için test amaçlı kodlanmış bir curl sınıfıdır.
 
 # Kullanımı
 
