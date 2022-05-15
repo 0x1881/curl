@@ -4,7 +4,9 @@
     "type": "library",
     "license": "MIT",
     "minimum-stability": "dev",
-    "require": {},
+    "require": {
+        "0x1881/curl": "dev-main"
+    },
     "autoload": {
         "psr-4": {
             "C4N\\": "src/"
