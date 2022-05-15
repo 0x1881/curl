@@ -2,6 +2,7 @@
     "name": "0x1881/curl",
     "description": "Curl Class",
     "type": "library",
+    "license": "MIT",
     "minimum-stability": "stable",
     "require": {},
     "autoload": {
