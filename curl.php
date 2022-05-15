@@ -2,6 +2,8 @@
 
 namespace C4N;
 
+use ReflectionClass;
+
 class C4NException extends \Exception
 {
     public function __construct($message = 'Something is wrong.', $code = 0, \Exception $previous = null)
@@ -74,6 +76,14 @@ class Curl
             $this->setError('Library is not loaded', 'cURL');
         }
         $this->setDefault();
+    }
+
+    protected static function getConstName($value)
+    {
+        $class = new ReflectionClass(__CLASS__);
+        $constants = array_flip($class->getConstants());
+
+        return $constants[$value];
     }
 
     /**
@@ -207,12 +217,19 @@ class Curl
      */
     public function setBody($body = null, $type = self::RAW)
     {
-        if (self::$method_properties[$this->req->method]['req_body']) {
-            $this->req->body = $type($body);
-            $this->setOpt(\CURLOPT_POSTFIELDS, $this->req->body);
+        if (isset($this->req->body) && (!empty($this->req->body))) {
+            $this->setError("The request body already set", __FUNCTION__);
         } else {
-            $this->setError("The request body cannot be used with this request method", $this->req->method);
+            if (self::$method_properties[$this->req->method]['req_body']) {
+                $this->req->body = $type($body);
+                $this->req->body_type = $this->getConstName($type);
+                $this->setOpt(\CURLOPT_POSTFIELDS, $this->req->body);
+            } else {
+                $this->setError("The request body cannot be used with this request method", $this->req->method);
+            }
         }
+
+
 
         return $this;
     }
@@ -227,13 +244,13 @@ class Curl
      * @return $this 
      * @throws C4NException 
      */
-    public function send(string $method, string $url, array $headers = [], string $body = null)
+    public function send(string $method, string $url, array $headers = [], string $body = null, $body_type = self::RAW)
     {
         $this->setMethod($method);
         $this->setUrl($url);
         $this->setHeader($headers);
         if (self::$method_properties[$this->req->method]['req_body']) {
-            $this->setBody($body);
+            $this->setBody($body, $body_type);
         }
 
         return $this;
@@ -263,9 +280,9 @@ class Curl
      * @param string|null $body
      * @return $this 
      */
-    public function post($url, $headers = [], string $body = null)
+    public function post($url, $headers = [], string $body = null, $body_type = self::RAW)
     {
-        $this->send(__FUNCTION__, $url, $headers, $body);
+        $this->send(__FUNCTION__, $url, $headers, $body, $body_type);
         $this->setOpt(\CURLOPT_POST, true);
 
         return $this;
@@ -279,9 +296,9 @@ class Curl
      * @param mixed|null $body
      * @return $this 
      */
-    public function put($url, $headers = [], string $body = null)
+    public function put($url, $headers = [], string $body = null, $body_type = self::RAW)
     {
-        $this->send(__FUNCTION__, $url, $headers, $body);
+        $this->send(__FUNCTION__, $url, $headers, $body, $body_type);
 
         return $this;
     }
@@ -294,9 +311,9 @@ class Curl
      * @param mixed|null $body
      * @return $this 
      */
-    public function delete($url, $headers = [], string $body = null)
+    public function delete($url, $headers = [], string $body = null, $body_type = self::RAW)
     {
-        $this->send(__FUNCTION__, $url, $headers, $body);
+        $this->send(__FUNCTION__, $url, $headers, $body, $body_type);
 
         return $this;
     }
@@ -309,9 +326,9 @@ class Curl
      * @param string|null $body
      * @return $this 
      */
-    public function patch($url, $headers = [], string $body = null)
+    public function patch($url, $headers = [], string $body = null, $body_type = self::RAW)
     {
-        $this->send(__FUNCTION__, $url, $headers, $body);
+        $this->send(__FUNCTION__, $url, $headers, $body, $body_type);
 
         return $this;
     }
