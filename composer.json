@@ -1,0 +1,8 @@
+{
+    "name": "0x1881/curl",
+    "description": "Curl Class",
+    "type": "library",
+    "license": "MIT License",
+    "minimum-stability": "stable",
+    "require": {}
+}
