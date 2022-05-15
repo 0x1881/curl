@@ -7,7 +7,7 @@
     "require": {},
     "autoload": {
         "psr-4": {
-            "Curl\\": "src/"
+            "C4N\\": "src/"
         }
     }
 }
