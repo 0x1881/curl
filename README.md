@@ -1,4 +1,4 @@
-# Curl Repo
+# Curl
 Bot yapımı için test amaçlı kodlanmış bir curl sınıfıdır.
 
 # Kurulum
