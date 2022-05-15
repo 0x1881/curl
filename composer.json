@@ -1,12 +1,9 @@
 {
     "name": "0x1881/curl",
     "description": "Curl Class",
+    "homepage": "https://github.com/0x1881/curl",
     "type": "library",
     "license": "MIT",
-    "minimum-stability": "dev",
-    "require": {
-        "0x1881/curl": "dev-main"
-    },
     "autoload": {
         "psr-4": {
             "C4N\\": "src/"
