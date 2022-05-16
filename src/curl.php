@@ -3,6 +3,7 @@
 namespace C4N;
 
 use ReflectionClass;
+use stdClass;
 
 class C4NException extends \Exception
 {
@@ -751,6 +752,8 @@ class Curl
      */
     public function find($search_datas, $source = null)
     {
+        $json = new stdClass();
+        $json->result = false;
         if (\is_null($source)) {
             $source = $this->getResponse();
         }
@@ -758,14 +761,20 @@ class Curl
         if (\is_array($search_datas)) {
             foreach ($search_datas as $search_data) {
                 $search_data = \preg_quote($search_data, '/');
-                if (\preg_match('/' . $search_data . '/si', $source)) $result = json_encode(['result' => true, 'finded' => $search_data]);
+                if (\preg_match('/' . $search_data . '/si', $source)) {
+                    $json->result = true;
+                    $json->finded = $search_data;
+                }
             }
         } else {
             $search_data = \preg_quote($search_datas, '/');
-            if (\preg_match('/' . $search_data . '/si', $source)) $result = json_encode(['result' => true, 'finded' => $search_datas]);
+            if (\preg_match('/' . $search_data . '/si', $source)) {
+                $json->result = true;
+                $json->finded = $search_datas;
+            }
         }
-        $null = json_encode(['result' => false]);
-        return isset($result) ? json_decode($result) : json_decode($null);
+
+        return $json;
     }
 
     /**
@@ -813,7 +822,7 @@ class Curl
      */
     public function getEffective(): string
     {
-        return $this->res->effective_url;
+        return strval($this->res->effective_url);
     }
 
     /**
@@ -835,12 +844,31 @@ class Curl
      */
     public function getHeader(string $header, int $header_id = null)
     {
-        if (\is_null($header_id)) {
-            $header = end($this->res->headers_array)[$header] ?? false;
+        $headers = $this->getHeaders($header_id);
+        if (\array_key_exists($header, $headers)) {
+            return $headers[$header];
         } else {
-            $header = $this->res->headers_array[$header_id][$header] ?? false;
+            $this->setError('Header not found', $header);
         }
-        return $header;
+    }
+
+    /**
+     * Getting headers from request response
+     * 
+     * @param int|null $header_id 
+     * @return mixed 
+     */
+    public function getHeaders(int $header_id = null)
+    {
+        if (\is_null($header_id)) {
+            $header = end($this->res->headers_array);
+        } else {
+            if (!isset($this->res->headers_array[$header_id])) {
+                $this->setError('Header not found', "Header id: " . $header_id);
+            }
+            $header = $this->res->headers_array[$header_id];
+        }
+        return $header ?? [];
     }
 
     /**
@@ -852,12 +880,12 @@ class Curl
      */
     public function getCookie(string $cookie, int $header_id = null)
     {
-        if (\is_null($header_id)) {
-            $cookie = end($this->res->headers_array)['set_cookie'][$cookie] ?? false;
+        $cookies = $this->getCookiesArray($header_id);
+        if (\array_key_exists($cookie, $cookies)) {
+            return $cookies[$cookie];
         } else {
-            $cookie = $this->res->headers_array[$header_id]['set_cookie'][$cookie] ?? false;
+            $this->setError('Cookie not found', $cookie);
         }
-        return $cookie;
     }
 
     /**
@@ -868,21 +896,8 @@ class Curl
      */
     public function getCookiesRaw(int $header_id = null): string
     {
-        if (\is_null($header_id)) {
-            $array = end($this->res->headers_array)['set_cookie'] ?? false;
-            $cookie = '';
-            foreach ($array as $key => $val) {
-                $cookie .= $key . '=' . $val . '; ';
-            }
-        } else {
-            $array = $this->res->headers_array[$header_id]['set_cookie'] ?? false;
-            $cookie = '';
-            foreach ($array as $key => $val) {
-                $cookie .= $key . '=' . $val . '; ';
-            }
-        }
-        $cookie = trim($cookie);
-        return $cookie;
+        $cookies = $this->getCookiesArray($header_id);
+        return http_build_query($cookies, '', '; ');
     }
 
     /**
@@ -894,11 +909,21 @@ class Curl
     public function getCookiesArray(int $header_id = null): array
     {
         if (\is_null($header_id)) {
-            $cookie = end($this->res->headers_array)['set_cookie'] ?? false;
+            $last_array = end($this->res->headers_array);
+            $cookie_check = array_key_exists('set_cookie', $last_array);
+            if ($cookie_check) $cookies = $last_array['set_cookie'];
+            else $this->setError('Cookies not found', 'set_cookie not found in header id: ' . $header_id);
         } else {
-            $cookie = $this->res->headers_array[$header_id]['set_cookie'] ?? false;
+            if (!isset($this->res->headers_array[$header_id])) {
+                $this->setError('Header not found', "Header id: " . $header_id);
+            }
+
+            $select_array = $this->res->headers_array[$header_id];
+            $cookie_check = array_key_exists('set_cookie', $select_array);
+            if ($cookie_check) $cookies = $select_array['set_cookie'];
+            else $this->setError('Cookies not found', 'set_cookie not found in header id: ' . $header_id);
         }
-        return $cookie;
+        return $cookies ?? [];
     }
 
     /**
