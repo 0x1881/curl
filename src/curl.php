@@ -736,7 +736,7 @@ class Curl
         if (json_last_error() === JSON_ERROR_NONE) {
             return $json;
         } else {
-            $this->setError("Response is not json", json_last_error_msg());
+            $this->setError("Response is not json", json_last_error());
         }
     }
 
