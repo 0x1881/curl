@@ -25,6 +25,12 @@ class Curl
     public const RAW = 'strval';
     private const PROXY_REGEX = '/^(?:(?<method>[http|https|socks4|socks5]*?):\/\/)?(?:(?<username>\w+)(?::(?<password>\w*))@)?(?<host>(?!\-)(?:(?:[a-zA-Z\d][a-zA-Z\d\-]{0,61})?[a-zA-Z\d]\.){1,126}(?!\d+)[a-zA-Z\d]{1,63}|((?:\d{1,3})(?:\.\d{1,3}){3}))(?::(?<port>\d{1,5}))$/ms';
 
+    public $req = null;
+    public $res = null;
+
+    /**
+     * Curl request method constructor
+     */
     private static $method_properties = [
         'GET' => [
             'req_body' => false,
@@ -63,10 +69,10 @@ class Curl
             'res_body' => false,
         ],
     ];
-    public $req = null;
-    public $res = null;
 
     /**
+     * Constructor
+     * 
      * @return void 
      * @throws C4NException 
      */
@@ -78,6 +84,12 @@ class Curl
         $this->setDefault();
     }
 
+    /**
+     * Get const name
+     * 
+     * @param mixed $value 
+     * @return int|string 
+     */
     private static function getConstName($value)
     {
         $class = new ReflectionClass(__CLASS__);
@@ -159,7 +171,6 @@ class Curl
         return $this;
     }
 
-
     /**
      * Request header set function
      * 
@@ -229,18 +240,16 @@ class Curl
             }
         }
 
-
-
         return $this;
     }
-
     /**
-     * Send request function
+     * Curl send function
      * 
      * @param string $method 
      * @param string $url 
      * @param array $headers 
-     * @param string|null $body 
+     * @param mixed $body 
+     * @param string $body_type 
      * @return $this 
      * @throws C4NException 
      */
@@ -257,7 +266,7 @@ class Curl
     }
 
     /**
-     * none
+     * "GET" request function
      * 
      * @param mixed $url 
      * @param array $headers 
@@ -273,7 +282,7 @@ class Curl
     }
 
     /**
-     * "Post" method request function
+     * "Post" request function
      * 
      * @param mixed $url
      * @param array $headers
@@ -289,7 +298,7 @@ class Curl
     }
 
     /**
-     * "Put" method request function
+     * "Put" request function
      * 
      * @param mixed $url
      * @param array $headers
@@ -304,7 +313,7 @@ class Curl
     }
 
     /**
-     * "Delete" method request function
+     * "Delete" request function
      * 
      * @param mixed $url
      * @param array $headers
@@ -319,7 +328,7 @@ class Curl
     }
 
     /**
-     * "Patch" method request function
+     * "Patch" request function
      * 
      * @param mixed $url
      * @param array $headers
@@ -334,7 +343,7 @@ class Curl
     }
 
     /**
-     * "Head" method request function
+     * "Head" request function
      * 
      * @param mixed $url
      * @param array $headers
@@ -349,7 +358,7 @@ class Curl
     }
 
     /**
-     * "Connect" method request function
+     * "Connect" request function
      * 
      * @param mixed $url
      * @param array $headers
@@ -363,7 +372,7 @@ class Curl
     }
 
     /**
-     * "Options" method request function
+     * "Options" request function
      * 
      * @param mixed $url
      * @param array $headers
@@ -377,7 +386,7 @@ class Curl
     }
 
     /**
-     * "Trace" method request function
+     * "Trace" request function
      * 
      * @param mixed $url
      * @param array $headers
@@ -394,7 +403,7 @@ class Curl
     /**
      * Curl exec and some parses
      * 
-     * @return mixed
+     * @return void 
      */
     public function exec(): void
     {
@@ -438,8 +447,8 @@ class Curl
     /**
      * Curl getinfo function short version
      * 
-     * @param mixed|null $opt 
-     * @return $this  
+     * @param mixed $opt 
+     * @return mixed 
      */
     public function getInfo($opt = null)
     {
@@ -450,10 +459,10 @@ class Curl
     }
 
     /**
-     * Curl verbose
+     * Curl debug function
      * 
      * @param bool $bool 
-     * @return $this  
+     * @return $this 
      */
     public function setDebug(bool $bool = false)
     {
@@ -463,7 +472,7 @@ class Curl
     }
 
     /**
-     * Curl cookie set
+     * Curl cookie set from file
      * 
      * @param string $file
      * @return $this 
@@ -476,7 +485,7 @@ class Curl
     }
 
     /**
-     * Curl cookie save
+     * Curl cookie save on file
      * 
      * @param string $file
      * @return $this 
@@ -528,7 +537,7 @@ class Curl
     }
 
     /**
-     * Curl auto referer
+     * Curl auto referer 2
      * 
      * @param bool $bool
      * @return $this 
@@ -541,7 +550,7 @@ class Curl
     }
 
     /**
-     * Curl timeout
+     * Curl timeout set
      * 
      * @param int $int
      * @return $this 
@@ -554,7 +563,7 @@ class Curl
     }
 
     /**
-     * Curl connect timeout
+     * Curl connect timeout set
      * 
      * @param int $int
      * @return $this 
@@ -567,7 +576,7 @@ class Curl
     }
 
     /**
-     * Curl max connect
+     * Curl max connect set
      * 
      * @param int $int
      * @return $this 
@@ -580,7 +589,7 @@ class Curl
     }
 
     /**
-     * Curl max redirect
+     * Curl max redirect set
      * 
      * @param int $int
      * @return $this 
@@ -593,13 +602,14 @@ class Curl
     }
 
     /**
-     * Curl proxy set function
+     * Curl proxy set
      * 
      * @param string $proxy
      * @param mixed $port
+     * @param bool $autoParse
      * @return $this 
      */
-    public function setProxy(string $proxy, $port = null, $autoParse = false)
+    public function setProxy(string $proxy, $port = null, bool $autoParse = false)
     {
 
         if ($autoParse && \is_null($port)) {
@@ -720,11 +730,24 @@ class Curl
      * @param int $flags
      * @return mixed
      */
-    public function getRespJson($array = false, $flags = 0)
+    public function getRespJson(bool $array = false, $flags = 0)
     {
-        return json_decode($this->getResponse(), $array, 512, $flags);
+        $json = json_decode($this->getResponse(), $array, 512, $flags);
+        if (json_last_error() === JSON_ERROR_NONE) {
+            return $json;
+        } else {
+            $this->setError("Response is not json", json_last_error_msg());
+        }
     }
 
+    /**
+     * Find string from request response
+     * 
+     * @param mixed $search_datas 
+     * @param mixed $source 
+     * @return mixed 
+     * @throws C4NException 
+     */
     public function find($search_datas, $source = null)
     {
         if (\is_null($source)) {
@@ -779,15 +802,15 @@ class Curl
                 $result[] = substr($val, 0, $pos);
             }
         }
-        return $result ?? '';
+        return $result ?? [];
     }
 
     /**
      * Getting effective url from request response
      * 
-     * @return mixed 
+     * @return string 
      */
-    public function getEffective()
+    public function getEffective(): string
     {
         return $this->res->effective_url;
     }
@@ -842,7 +865,7 @@ class Curl
      * @param int|null $header_id
      * @return mixed
      */
-    public function getCookiesRaw(int $header_id = null)
+    public function getCookiesRaw(int $header_id = null): string
     {
         if (\is_null($header_id)) {
             $array = end($this->res->headers_array)['set_cookie'] ?? false;
@@ -867,7 +890,7 @@ class Curl
      * @param int|null $header_id
      * @return mixed
      */
-    public function getCookiesArray(int $header_id = null)
+    public function getCookiesArray(int $header_id = null): array
     {
         if (\is_null($header_id)) {
             $cookie = end($this->res->headers_array)['set_cookie'] ?? false;
@@ -912,7 +935,7 @@ class Curl
         return $head;
     }
 
-    private function proxyParse($string)
+    private function proxyParse($string): array
     {
         \preg_match(self::PROXY_REGEX, $string, $matches);
         return $matches;
