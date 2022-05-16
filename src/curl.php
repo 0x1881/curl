@@ -733,11 +733,11 @@ class Curl
     public function getRespJson(bool $array = false, $flags = 0)
     {
         $json = json_decode($this->getResponse(), $array, 512, $flags);
-        $json_error = json_last_error();
-        if ($json_error === JSON_ERROR_NONE) {
+
+        if ((!$array && is_object($json)) || ($array && is_array($json))) {
             return $json;
         } else {
-            $this->setError("Response is not json", $json_error);
+            $this->setError("Response is not json");
         }
     }
 
