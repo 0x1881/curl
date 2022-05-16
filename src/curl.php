@@ -23,7 +23,7 @@ class Curl
     public const QUERY = 'http_build_query';
     public const JSON = 'json_encode';
     public const RAW = 'strval';
-    public const PROXY_REGEX = '/^(?:(?<method>[http|https|socks4|socks5]*?):\/\/)?(?:(?<username>\w+)(?::(?<password>\w*))@)?(?<host>(?!\-)(?:(?:[a-zA-Z\d][a-zA-Z\d\-]{0,61})?[a-zA-Z\d]\.){1,126}(?!\d+)[a-zA-Z\d]{1,63}|((?:\d{1,3})(?:\.\d{1,3}){3}))(?::(?<port>\d{1,5}))$/ms';
+    private const PROXY_REGEX = '/^(?:(?<method>[http|https|socks4|socks5]*?):\/\/)?(?:(?<username>\w+)(?::(?<password>\w*))@)?(?<host>(?!\-)(?:(?:[a-zA-Z\d][a-zA-Z\d\-]{0,61})?[a-zA-Z\d]\.){1,126}(?!\d+)[a-zA-Z\d]{1,63}|((?:\d{1,3})(?:\.\d{1,3}){3}))(?::(?<port>\d{1,5}))$/ms';
 
     private static $method_properties = [
         'GET' => [
@@ -78,7 +78,7 @@ class Curl
         $this->setDefault();
     }
 
-    protected static function getConstName($value)
+    private static function getConstName($value)
     {
         $class = new ReflectionClass(__CLASS__);
         $constants = array_flip($class->getConstants());
@@ -94,7 +94,7 @@ class Curl
      * @return void 
      * @throws C4NException 
      */
-    protected function setError($message, $value = null): void
+    private function setError($message, $value = null): void
     {
         throw new C4NException($message . ": " . $value);
     }
@@ -244,7 +244,7 @@ class Curl
      * @return $this 
      * @throws C4NException 
      */
-    public function send(string $method, string $url, array $headers = [], string $body = null, $body_type = self::RAW)
+    public function send(string $method, string $url, array $headers = [], $body = null, $body_type = self::RAW)
     {
         $this->setMethod($method);
         $this->setUrl($url);
@@ -280,7 +280,7 @@ class Curl
      * @param string|null $body
      * @return $this 
      */
-    public function post($url, $headers = [], string $body = null, $body_type = self::RAW)
+    public function post($url, $headers = [], $body = null, $body_type = self::RAW)
     {
         $this->send(__FUNCTION__, $url, $headers, $body, $body_type);
         $this->setOpt(\CURLOPT_POST, true);
@@ -296,7 +296,7 @@ class Curl
      * @param mixed|null $body
      * @return $this 
      */
-    public function put($url, $headers = [], string $body = null, $body_type = self::RAW)
+    public function put($url, $headers = [], $body = null, $body_type = self::RAW)
     {
         $this->send(__FUNCTION__, $url, $headers, $body, $body_type);
 
@@ -311,7 +311,7 @@ class Curl
      * @param mixed|null $body
      * @return $this 
      */
-    public function delete($url, $headers = [], string $body = null, $body_type = self::RAW)
+    public function delete($url, $headers = [], $body = null, $body_type = self::RAW)
     {
         $this->send(__FUNCTION__, $url, $headers, $body, $body_type);
 
@@ -326,7 +326,7 @@ class Curl
      * @param string|null $body
      * @return $this 
      */
-    public function patch($url, $headers = [], string $body = null, $body_type = self::RAW)
+    public function patch($url, $headers = [], $body = null, $body_type = self::RAW)
     {
         $this->send(__FUNCTION__, $url, $headers, $body, $body_type);
 
@@ -912,7 +912,7 @@ class Curl
         return $head;
     }
 
-    public function proxyParse($string)
+    private function proxyParse($string)
     {
         \preg_match(self::PROXY_REGEX, $string, $matches);
         return $matches;

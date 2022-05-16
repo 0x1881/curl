@@ -20,3 +20,5 @@ print_r($curl);
 
 echo $curl->getResponse();
 ```
+
+# Metodlar
