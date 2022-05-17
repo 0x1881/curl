@@ -22,7 +22,7 @@ echo $curl->getResponse();
 ```
 
 # Metodlar
-```
+```php
 $curl->getCurlError();
 $curl->setDefault();
 $curl->setMethod('GET');
