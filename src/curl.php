@@ -2,7 +2,7 @@
 
 namespace C4N;
 
-use C4N\CurlException;
+use C4N\Exception\CurlException;
 use ReflectionClass;
 use stdClass;
 

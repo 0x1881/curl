@@ -1,6 +1,6 @@
 <?php
 
-namespace C4N\Curl\Exception;
+namespace C4N\Exception;
 
 /**
  * Class CurlException
