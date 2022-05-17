@@ -1,5 +1,5 @@
-# Curl
-Bot yapımı için test amaçlı kodlanmış bir curl sınıfıdır.
+# PHP Curl
+Bot yapımı için kodlanmış bir curl sınıfıdır.
 
 # Kurulum
 ```
