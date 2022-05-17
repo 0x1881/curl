@@ -2,16 +2,9 @@
 
 namespace C4N;
 
+use C4N\CurlException;
 use ReflectionClass;
 use stdClass;
-
-class C4NException extends \Exception
-{
-    public function __construct($message = 'Something is wrong.', $code = 0, \Exception $previous = null)
-    {
-        parent::__construct($message, $code, $previous);
-    }
-}
 
 /**
  * Curl class
@@ -75,12 +68,12 @@ class Curl
      * Constructor
      * 
      * @return void 
-     * @throws C4NException 
+     * @throws CurlException 
      */
     public function __construct()
     {
         if (!extension_loaded('curl')) {
-            $this->setError('Library is not loaded', 'cURL');
+            throw new CurlException("cURL extension is not loaded");
         }
         $this->setDefault();
     }
@@ -97,19 +90,6 @@ class Curl
         $constants = array_flip($class->getConstants());
 
         return $constants[$value];
-    }
-
-    /**
-     * Set error exception
-     * 
-     * @param mixed $message 
-     * @param mixed $value 
-     * @return void 
-     * @throws C4NException 
-     */
-    private function setError($message, $value = null): void
-    {
-        throw new C4NException($message . ": " . $value);
     }
 
     /**
@@ -152,7 +132,7 @@ class Curl
             $this->req->method = $methodUP;
             $this->setOpt(\CURLOPT_CUSTOMREQUEST, $this->req->method);
         } else {
-            $this->setError("The request method invalid", $method);
+            throw new CurlException("Method {$method} is not supported");
         }
 
         return $this;
@@ -207,7 +187,7 @@ class Curl
                 $this->req->headers = $new_header;
             }
         } else {
-            $this->setError("Error setHeader: ", $header);
+            throw new CurlException("Header {$header} is not valid");
         }
 
         if (isset($this->req->headers) && (is_array($this->req->headers) && count($this->req->headers) > 0)) {
@@ -230,14 +210,14 @@ class Curl
     public function setBody($body = null, $type = self::RAW)
     {
         if (isset($this->req->body) && (!empty($this->req->body))) {
-            $this->setError("The request body already set", __FUNCTION__);
+            throw new CurlException("Body is already set"); 
         } else {
             if (self::$method_properties[$this->req->method]['req_body']) {
                 $this->req->body = $type($body);
                 $this->req->body_type = $this->getConstName($type);
                 $this->setOpt(\CURLOPT_POSTFIELDS, $this->req->body);
             } else {
-                $this->setError("The request body cannot be used with this request method", $this->req->method);
+                throw new CurlException("Method {$this->req->method} does not support body");
             }
         }
 
@@ -616,16 +596,16 @@ class Curl
         if ($autoParse && \is_null($port)) {
             $proxy_array = $this->proxyParse($proxy);
 
-            if (count($proxy_array)) {
+            if (count($proxy_array) > 0 && is_array($proxy_array)) {
                 extract($proxy_array);
             } else {
-                $this->setError('Proxy auto parser did not work properly', 'null array');
+                throw new CurlException("Proxy parse error");
             }
 
             if (isset($host) && !empty($host)) {
                 $this->setOpt(\CURLOPT_PROXY, $host);
             } else {
-                $this->setError('Proxy auto parser did not work properly', 'host parameter');
+                throw new CurlException("Proxy host error");
             }
 
             if (isset($port) && !empty($port)) {
@@ -720,7 +700,7 @@ class Curl
             }
             return !isset($this->res->body) ? null : $this->res->body;
         } else {
-            $this->setError("This request method does not return the response body", $this->req->method);
+            throw new CurlException("Method {$this->req->method} does not support response body");
         }
     }
 
@@ -738,7 +718,7 @@ class Curl
         if ((!$array && is_object($json)) || ($array && is_array($json))) {
             return $json;
         } else {
-            $this->setError("Response is not json");
+            throw new CurlException("Response json parse error");
         }
     }
 
@@ -848,7 +828,7 @@ class Curl
         if (\array_key_exists($header, $headers)) {
             return $headers[$header];
         } else {
-            $this->setError('Header not found', $header);
+            throw new CurlException("Header {$header} not found");
         }
     }
 
@@ -864,7 +844,7 @@ class Curl
             $header = end($this->res->headers_array);
         } else {
             if (!isset($this->res->headers_array[$header_id])) {
-                $this->setError('Header not found', "Header id: " . $header_id);
+                throw new CurlException("Header id {$header_id} not found");
             }
             $header = $this->res->headers_array[$header_id];
         }
@@ -884,7 +864,7 @@ class Curl
         if (\array_key_exists($cookie, $cookies)) {
             return $cookies[$cookie];
         } else {
-            $this->setError('Cookie not found', $cookie);
+            throw new CurlException("Cookie {$cookie} not found");
         }
     }
 
@@ -912,16 +892,16 @@ class Curl
             $last_array = end($this->res->headers_array);
             $cookie_check = array_key_exists('set_cookie', $last_array);
             if ($cookie_check) $cookies = $last_array['set_cookie'];
-            else $this->setError('Cookies not found', 'set_cookie not found in header id: ' . $header_id);
+            else throw new CurlException("Cookies not found");
         } else {
             if (!isset($this->res->headers_array[$header_id])) {
-                $this->setError('Header not found', "Header id: " . $header_id);
+                throw new CurlException("Header id {$header_id} not found");
             }
 
             $select_array = $this->res->headers_array[$header_id];
             $cookie_check = array_key_exists('set_cookie', $select_array);
             if ($cookie_check) $cookies = $select_array['set_cookie'];
-            else $this->setError('Cookies not found', 'set_cookie not found in header id: ' . $header_id);
+            else throw new CurlException("Cookies not found");
         }
         return $cookies ?? [];
     }
