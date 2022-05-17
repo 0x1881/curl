@@ -23,6 +23,9 @@ echo $curl->getResponse();
 
 # Metodlar
 ```php
+$curl::RAW
+$curl::JSON
+$curl::QUERY
 $curl->getCurlError();
 $curl->setDefault();
 $curl->setMethod('GET');
