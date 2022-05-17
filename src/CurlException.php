@@ -1,11 +1,11 @@
 <?php
 
-namespace C4N\Exception;
+namespace C4N;
 
 /**
  * Class CurlException
  * 
- * @package C4N\Exception;
+ * @package C4N;
  */
 class CurlException extends \Exception
 {

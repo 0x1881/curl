@@ -2,7 +2,7 @@
 
 namespace C4N;
 
-use C4N\Exception\CurlException;
+use C4N\CurlException;
 use ReflectionClass;
 use stdClass;
 
@@ -217,7 +217,7 @@ class Curl
                 $this->req->body_type = $this->getConstName($type);
                 $this->setOpt(\CURLOPT_POSTFIELDS, $this->req->body);
             } else {
-                throw new CurlException("Method {$this->req->method} does not support body");
+                throw new CurlException("Method {$this->req->method} does not support request body");
             }
         }
 
