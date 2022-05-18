@@ -72,9 +72,7 @@ class Curl
      */
     public function __construct()
     {
-        if (!extension_loaded('curl')) {
-            throw new CurlException("cURL extension is not loaded");
-        }
+        if (!extension_loaded('curl')) throw new CurlException("cURL extension is not loaded");
         $this->setDefault();
     }
 
@@ -112,8 +110,10 @@ class Curl
         $this->req = new \stdClass();
         $this->req->ch = curl_init();
         $this->res = new \stdClass();
+
         $this->setOpt(\CURLOPT_HEADER, true);
         $this->setOpt(\CURLOPT_RETURNTRANSFER, true);
+
         return $this;
     }
 
@@ -210,7 +210,7 @@ class Curl
     public function setBody($body = null, $type = self::RAW)
     {
         if (isset($this->req->body) && (!empty($this->req->body))) {
-            throw new CurlException("Body is already set"); 
+            throw new CurlException("Body is already set");
         } else {
             if (self::$method_properties[$this->req->method]['req_body']) {
                 $this->req->body = $type($body);
@@ -421,26 +421,20 @@ class Curl
     public function setOpt($opt, $val)
     {
         $set = curl_setopt($this->req->ch, $opt, $val);
-
-        if ($set) {
-            $this->req->opt[$opt] = $val;
-        }
+        if ($set) $this->req->opt[$opt] = $val;
 
         return $this;
     }
 
     /**
-     * Curl getinfo function short version
+     * Curl getopt function
      * 
      * @param mixed $opt 
-     * @return mixed 
+     * @return $this  
      */
-    public function getInfo($opt = null)
+    public function getOpt($opt)
     {
-        if (\is_null($opt)) {
-            return curl_getinfo($this->req->ch);
-        }
-        return curl_getinfo($this->req->ch, $opt);
+        return $this->req->opt[$opt];
     }
 
     /**
@@ -451,6 +445,7 @@ class Curl
      */
     public function setDebug(bool $bool = false)
     {
+
         $this->setOpt(\CURLOPT_VERBOSE, $bool);
 
         return $this;
@@ -691,6 +686,20 @@ class Curl
     }
 
     /**
+     * Curl getinfo function short version
+     * 
+     * @param mixed $opt 
+     * @return mixed 
+     */
+    public function getInfo($opt = null)
+    {
+        if (\is_null($opt)) {
+            return curl_getinfo($this->req->ch);
+        }
+        return curl_getinfo($this->req->ch, $opt);
+    }
+
+    /**
      * Getting request response
      * 
      * @return mixed 
@@ -745,20 +754,32 @@ class Curl
         if (\is_array($search_datas)) {
             foreach ($search_datas as $search_data) {
                 $search_data = \preg_quote($search_data, '/');
-                if (\preg_match('/' . $search_data . '/si', $source)) {
+                if (\preg_match('/' . $search_data . '/si', $source) || $this->contains($search_data, $source)) {
                     $json->result = true;
                     $json->finded = $search_data;
                 }
             }
         } else {
             $search_data = \preg_quote($search_datas, '/');
-            if (\preg_match('/' . $search_data . '/si', $source)) {
+            if (\preg_match('/' . $search_data . '/si', $source) || $this->contains($search_data, $source)) {
                 $json->result = true;
                 $json->finded = $search_datas;
             }
         }
 
         return $json;
+    }
+
+    /**
+     * Find string from text
+     * 
+     * @param mixed $needle 
+     * @param mixed $haystack 
+     * @return bool 
+     */
+    private function contains($needle, $haystack)
+    {
+        return strpos($haystack, $needle) !== false;
     }
 
     /**

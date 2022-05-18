@@ -48,14 +48,14 @@ class CurlTest extends TestCase
 
     public function testSetDefault(): void
     {
-        /** @todo This test is incomplete. */
-        $this->markTestIncomplete();
+        $this->curl->setDefault();
+        $this->assertIsResource($this->curl->ch);
     }
 
     public function testSetMethod(): void
     {
-        /** @todo This test is incomplete. */
-        $this->markTestIncomplete();
+        $this->curl->setMethod("GET");
+        $this->assertEquals('GET', $this->curl->req->method);
     }
 
     public function testSetUrl(): void
@@ -233,12 +233,6 @@ class CurlTest extends TestCase
         $this->assertEquals('https://httpbin.org/trace', $this->curl->req->url);
         $this->assertContains('TestHeader-1: value 1', $this->curl->req->headers);
         $this->assertContains('TestHeader-2: value 2', $this->curl->req->headers);
-    }
-
-    public function testExec(): void
-    {
-        /** @todo This test is incomplete. */
-        $this->markTestIncomplete();
     }
 
     public function testSetOpt(): void
