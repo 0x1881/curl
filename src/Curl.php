@@ -420,7 +420,11 @@ class Curl
      */
     public function setOpt($opt, $val)
     {
-        curl_setopt($this->req->ch, $opt, $val);
+        $set = curl_setopt($this->req->ch, $opt, $val);
+
+        if ($set) {
+            $this->req[$opt] = $val;
+        }
 
         return $this;
     }

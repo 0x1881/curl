@@ -8,5 +8,9 @@
         "psr-4": {
             "C4N\\": "src/"
         }
+    },
+    "require": {
+        "phpunit/phpunit": "^9.5",
+        "phpunitgen/console": "^1.5"
     }
 }
