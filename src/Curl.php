@@ -423,7 +423,7 @@ class Curl
         $set = curl_setopt($this->req->ch, $opt, $val);
 
         if ($set) {
-            $this->req[$opt] = $val;
+            $this->req->opt[$opt] = $val;
         }
 
         return $this;
