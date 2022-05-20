@@ -23,7 +23,7 @@ class Curl
     public $res = null;
 
     /**
-     * Curl request method constructor
+     * Curl request method properties
      */
     private static $method_properties = [
         'GET' => [
@@ -65,8 +65,6 @@ class Curl
     ];
 
     /**
-     * Constructor
-     * 
      * @return void 
      * @throws CurlException 
      */
@@ -74,20 +72,6 @@ class Curl
     {
         if (!extension_loaded('curl')) throw new CurlException("cURL extension is not loaded");
         $this->setDefault();
-    }
-
-    /**
-     * Get const name
-     * 
-     * @param mixed $value 
-     * @return int|string 
-     */
-    private static function getConstName($value)
-    {
-        $class = new ReflectionClass(__CLASS__);
-        $constants = array_flip($class->getConstants());
-
-        return $constants[$value];
     }
 
     /**
@@ -680,6 +664,19 @@ class Curl
     }
 
     /**
+     * Curl user agent set function
+     * 
+     * @param string|null $useragent 
+     * @return $this 
+     */
+    public function setUserAgent(string $useragent = null)
+    {
+        $this->setOpt(\CURLOPT_USERAGENT, $useragent);
+
+        return $this;
+    }
+
+    /**
      * Curl getinfo function short version
      * 
      * @param mixed $opt 
@@ -717,7 +714,7 @@ class Curl
     {
         if (self::$method_properties[$this->req->method]['res_body']) {
             if ($remove_line_break) {
-                return $this->htmlCompress($this->res->body);
+                return $this->minifyHTML($this->res->body);
             }
             return $this->res->body;
         } else {
@@ -986,12 +983,26 @@ class Curl
      * @param string $buffer 
      * @return string 
      */
-    private function htmlCompress(string $buffer): string
+    private function minifyHTML(string $buffer): string
     {
         $regex  = ['/\>[^\S ]+/s' => '>', '/[^\S ]+\</s' => '<', '/(\s)+/s' => '\\1'];
         $buffer = \preg_replace(array_keys($regex), array_values($regex), $buffer);
         $re = '%(?>[^\S ]\s*| \s{2,})(?=(?:(?:[^<]++| <(?!/?(?:textarea|pre)\b))*+)(?:<(?>textarea|pre)\b| \z))%ix';
         $buffer = \preg_replace($re, " ", $buffer);
         return $buffer;
+    }
+
+    /**
+     * Get const name in class
+     * 
+     * @param mixed $value 
+     * @return int|string 
+     */
+    private static function getConstName($value)
+    {
+        $class = new ReflectionClass(__CLASS__);
+        $constants = array_flip($class->getConstants());
+
+        return $constants[$value];
     }
 }

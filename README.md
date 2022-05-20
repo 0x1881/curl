@@ -10,15 +10,26 @@ composer require 0x1881/curl
 ```php
 <?php
 
-require_once 'vendor/autoload.php';
+require_once __DIR__.'/vendor/autoload.php';
 
-use \C4N\Curl;
-
-$curl = new Curl;
-$curl->get('https://httpbin.org/get');
-$curl->exec();
+$curl = new \C4N\Curl;
+$curl->get('https://httpbin.org/get')
+     ->setDebug(true)
+     ->setHeader('User-agent: Googlebot/2.1 (+http://www.google.com/bot.html)')
+     ->setUserAgent('Googlebot/2.1 (+http://www.google.com/bot.html)')
+     ->setCookieFile('./cookie.txt')
+     ->setCookieJar('./cookie.txt')
+     ->setReferer('https://httpbin.org/')
+     ->setAutoReferer(true)
+     ->setTimeout(5)
+     ->setProxy('127.0.0.1:8888')
+     ->setProxyAuth('user:pass')
+     ->exec();
 
 echo $curl->getResponse();
+echo $curl->getHttpCode();
+echo $curl->getHeader('Location');
+echo $curl->getCookie('laravel_session');
 ```
 
 # Metodlar
@@ -48,10 +59,12 @@ $curl->getOpt(CURLOPT_URL);
 $curl->getInfo(CURLINFO_HTTP_CODE);
 $curl->getInfos('http_code');
 $curl->setDebug(true);
+$curl->setUserAgent('Googlebot/2.1 (+http://www.google.com/bot.html)');
 $curl->setCookieFile('./cookie.txt');
 $curl->setCookieJar('./cookie.txt');
 $curl->setFollow(true);
 $curl->setReturn(true);
+$curl->setReferer('https://httpbin.org/');
 $curl->setAutoReferer(true);
 $curl->setTimeout(5);
 $curl->setConnectTimeout(5);
