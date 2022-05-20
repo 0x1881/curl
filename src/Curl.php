@@ -126,7 +126,6 @@ class Curl
      */
     public function setMethod(string $method)
     {
-        $this->setDefault();
         $methodUP = strtoupper($method);
         if (isset(self::$method_properties[$methodUP])) {
             $this->req->method = $methodUP;
@@ -236,6 +235,7 @@ class Curl
      */
     public function send(string $method, string $url, array $headers = [], $body = null, $body_type = self::RAW)
     {
+        $this->setDefault();
         $this->setMethod($method);
         $this->setUrl($url);
         $this->setHeader($headers);
