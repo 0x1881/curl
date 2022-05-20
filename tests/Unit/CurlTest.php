@@ -342,12 +342,6 @@ class CurlTest extends TestCase
         $this->assertEquals('user:pass', $this->curl->getOpt(\CURLOPT_PROXYUSERPWD));
     }
 
-    public function testSetDns(): void
-    {
-        $this->curl->setProxyAuth('user:pass');
-        $this->assertEquals('user:pass', $this->curl->getOpt(\CURLOPT_PROXYUSERPWD));
-    }
-
     public function testGetResponse(): void
     {
         $this->curl->get("https://httpbin.org/get");

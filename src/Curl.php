@@ -126,14 +126,17 @@ class Curl
      */
     public function setMethod(string $method)
     {
-        $methodUP = strtoupper($method);
-        if (isset(self::$method_properties[$methodUP])) {
-            $this->req->method = $methodUP;
-            $this->setOpt(\CURLOPT_CUSTOMREQUEST, $this->req->method);
+        if (isset($this->req->method) && !empty($this->req->method)) {
+            throw new CurlException("Request method is already set");
         } else {
-            throw new CurlException("Method {$method} is not supported");
+            $methodUP = strtoupper($method);
+            if (isset(self::$method_properties[$methodUP])) {
+                $this->req->method = $methodUP;
+                $this->setOpt(\CURLOPT_CUSTOMREQUEST, $this->req->method);
+            } else {
+                throw new CurlException("Method {$method} is not supported");
+            }
         }
-
         return $this;
     }
 
@@ -159,7 +162,7 @@ class Curl
      * @return $this 
      * @throws C4NException 
      */
-    public function setHeader($header = null, string $value = "curl_no_value")
+    public function setHeader($header = null, string $value = "header_no_value")
     {
         if ((\is_array($header))) {
             $new_header = null;
@@ -179,7 +182,7 @@ class Curl
                 $this->req->headers = $header;
             }
         } elseif (\is_string($header)) {
-            $new_header = $value == 'curl_no_value' ? [$header] : [$header . ': ' . $value];
+            $new_header = $value == 'header_no_value' ? [$header] : [$header . ': ' . $value];
             if (isset($this->req->headers)) {
                 $this->req->headers = array_merge($this->req->headers, $new_header);
             } else {
@@ -208,12 +211,18 @@ class Curl
      */
     public function setBody($body = null, $type = self::RAW)
     {
-        if (isset($this->req->body) && (!empty($this->req->body))) {
-            throw new CurlException("Body is already set");
+        if (isset($this->req->body) && !empty($this->req->body)) {
+            throw new CurlException("Request body is already set");
         } else {
             if (self::$method_properties[$this->req->method]['req_body']) {
-                $this->req->body = $type($body);
-                $this->req->body_type = $this->getConstName($type);
+                if (is_array($body) && $type == self::RAW) {
+                    $type = self::QUERY;
+                    $this->req->body = $type($body);
+                    $this->req->body_type = $this->getConstName($type);
+                } else {
+                    $this->req->body = $type($body);
+                    $this->req->body_type = $this->getConstName($type);
+                }
                 $this->setOpt(\CURLOPT_POSTFIELDS, $this->req->body);
             } else {
                 throw new CurlException("Method {$this->req->method} does not support request body");
@@ -671,21 +680,6 @@ class Curl
     }
 
     /**
-     * none
-     * 
-     * @param string $dns1 
-     * @param string|null $dns2 
-     * @return $this 
-     */
-    public function setDns(string $dns1, string $dns2 = null)
-    {
-        $dns = \is_null($dns2) ? $dns1 : $dns1 . ':' . $dns2;
-        $this->setOpt(\CURLOPT_DNS_SERVERS, $dns);
-
-        return $this;
-    }
-
-    /**
      * Curl getinfo function short version
      * 
      * @param mixed $opt 
@@ -699,7 +693,7 @@ class Curl
         return curl_getinfo($this->req->ch, $opt);
     }
 
-        /**
+    /**
      * Curl getinfo function short version
      * 
      * @param mixed $opt 
@@ -971,7 +965,7 @@ class Curl
                         $head[$k1][trim($t[0])] = trim($t[1]);
                     }
                 } else {
-                    if (\preg_match("#HTTP/[\d\.]+\s+([\d]+)#", $v2, $out)) {
+                    if (\preg_match("@HTTP/[\d\.]+\s+([\d]+)@", $v2, $out)) {
                         $head[$k1]['response_code'] = intval($out[1]);
                     }
                 }
