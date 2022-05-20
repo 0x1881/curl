@@ -40,16 +40,10 @@ class CurlTest extends TestCase
         unset($this->curl);
     }
 
-    public function testGetCurlError(): void
-    {
-        /** @todo This test is incomplete. */
-        $this->markTestIncomplete();
-    }
-
     public function testSetDefault(): void
     {
         $this->curl->setDefault();
-        $this->assertIsResource($this->curl->ch);
+        $this->assertIsResource($this->curl->req->ch);
     }
 
     public function testSetMethod(): void
@@ -237,175 +231,210 @@ class CurlTest extends TestCase
 
     public function testSetOpt(): void
     {
-        /** @todo This test is incomplete. */
-        $this->markTestIncomplete();
+        $this->curl->setOpt(CURLOPT_URL, "https://httpbin.org/get");
+        $this->assertEquals('https://httpbin.org/get', $this->curl->getOpt(\CURLOPT_URL));
     }
 
     public function testGetInfo(): void
     {
-        /** @todo This test is incomplete. */
-        $this->markTestIncomplete();
+        $headers = [
+            "TestHeader-1: value 1",
+            "TestHeader-2: value 2"
+        ];
+        $this->curl->get("https://httpbin.org/get", $headers);
+        $this->curl->exec();
+        $this->assertEquals('GET', $this->curl->req->method);
+        $this->assertEquals('https://httpbin.org/get', $this->curl->req->url);
     }
 
     public function testSetDebug(): void
     {
-        /** @todo This test is incomplete. */
-        $this->markTestIncomplete();
+        $this->curl->setDebug(true);
+        $this->assertEquals(true, $this->curl->getOpt(\CURLOPT_VERBOSE));
     }
 
     public function testSetCookieFile(): void
     {
-        /** @todo This test is incomplete. */
-        $this->markTestIncomplete();
+        $this->curl->setCookieFile('./cookie.txt');
+        $this->assertEquals('./cookie.txt', $this->curl->getOpt(\CURLOPT_COOKIEFILE));
     }
 
     public function testSetCookieJar(): void
     {
-        /** @todo This test is incomplete. */
-        $this->markTestIncomplete();
+        $this->curl->setCookieJar('./cookie.txt');
+        $this->assertEquals('./cookie.txt', $this->curl->getOpt(\CURLOPT_COOKIEJAR));
     }
 
     public function testSetFollow(): void
     {
-        /** @todo This test is incomplete. */
-        $this->markTestIncomplete();
+        $this->curl->setFollow(true);
+        $this->assertTrue($this->curl->getOpt(\CURLOPT_FOLLOWLOCATION));
+        $this->curl->setFollow(false);
+        $this->assertFalse($this->curl->getOpt(\CURLOPT_FOLLOWLOCATION));
     }
 
     public function testSetReturn(): void
     {
-        /** @todo This test is incomplete. */
-        $this->markTestIncomplete();
+        $this->curl->setReturn(true);
+        $this->assertTrue($this->curl->getOpt(\CURLOPT_RETURNTRANSFER));
+        $this->curl->setReturn(false);
+        $this->assertFalse($this->curl->getOpt(\CURLOPT_RETURNTRANSFER));
+    }
+
+    public function testSetReferer(): void
+    {
+        $this->curl->setReferer("https://httpbin.org/");
+        $this->assertEquals('https://httpbin.org/', $this->curl->getOpt(\CURLOPT_REFERER));
     }
 
     public function testSetAutoReferer(): void
     {
-        /** @todo This test is incomplete. */
-        $this->markTestIncomplete();
-    }
-
-    public function testSetAutoReferrer(): void
-    {
-        /** @todo This test is incomplete. */
-        $this->markTestIncomplete();
+        $this->curl->setAutoReferer(true);
+        $this->assertTrue($this->curl->getOpt(\CURLOPT_AUTOREFERER));
+        $this->curl->setAutoReferer(false);
+        $this->assertFalse($this->curl->getOpt(\CURLOPT_AUTOREFERER));
     }
 
     public function testSetTimeout(): void
     {
-        /** @todo This test is incomplete. */
-        $this->markTestIncomplete();
+        $this->curl->setTimeout(5);
+        $this->assertIsInt($this->curl->getOpt(\CURLOPT_TIMEOUT));
     }
 
     public function testSetConnectTimeout(): void
     {
-        /** @todo This test is incomplete. */
-        $this->markTestIncomplete();
+        $this->curl->setTimeout(5);
+        $this->assertIsInt($this->curl->getOpt(\CURLOPT_TIMEOUT));
     }
 
     public function testSetMaxConnect(): void
     {
-        /** @todo This test is incomplete. */
-        $this->markTestIncomplete();
+        $this->curl->setMaxConnect(5);
+        $this->assertIsInt($this->curl->getOpt(\CURLOPT_MAXCONNECTS));
     }
 
     public function testSetMaxRedirect(): void
     {
-        /** @todo This test is incomplete. */
-        $this->markTestIncomplete();
+        $this->curl->setMaxRedirect(5);
+        $this->assertIsInt($this->curl->getOpt(\CURLOPT_MAXREDIRS));
     }
 
     public function testSetProxy(): void
     {
-        /** @todo This test is incomplete. */
-        $this->markTestIncomplete();
+        $this->curl->setProxy('https://127.0.0.1:8080');
+        $this->assertEquals('127.0.0.1', $this->curl->getOpt(\CURLOPT_PROXY));
+        $this->assertEquals(8080, $this->curl->getOpt(\CURLOPT_PROXYPORT));
+        $this->assertEquals(\CURLPROXY_HTTPS, $this->curl->getOpt(\CURLOPT_PROXYTYPE));
     }
 
     public function testSetProxyType(): void
     {
-        /** @todo This test is incomplete. */
-        $this->markTestIncomplete();
+        $this->curl->setProxyType(CURLPROXY_HTTPS);
+        $this->assertEquals(CURLPROXY_HTTPS, $this->curl->getOpt(\CURLOPT_PROXYTYPE));
     }
 
     public function testSetProxyAuth(): void
     {
-        /** @todo This test is incomplete. */
-        $this->markTestIncomplete();
+        $this->curl->setProxyAuth('user:pass');
+        $this->assertEquals('user:pass', $this->curl->getOpt(\CURLOPT_PROXYUSERPWD));
+
+        $this->curl->setProxyAuth('user', 'pass');
+        $this->assertEquals('user:pass', $this->curl->getOpt(\CURLOPT_PROXYUSERPWD));
     }
 
     public function testSetDns(): void
     {
-        /** @todo This test is incomplete. */
-        $this->markTestIncomplete();
+        $this->curl->setProxyAuth('user:pass');
+        $this->assertEquals('user:pass', $this->curl->getOpt(\CURLOPT_PROXYUSERPWD));
     }
 
     public function testGetResponse(): void
     {
-        /** @todo This test is incomplete. */
-        $this->markTestIncomplete();
+        $this->curl->get("https://httpbin.org/get");
+        $this->curl->exec();
+        $this->assertIsString($this->curl->getResponse());
     }
 
     public function testGetRespJson(): void
     {
-        /** @todo This test is incomplete. */
-        $this->markTestIncomplete();
+        $this->curl->get("https://httpbin.org/json");
+        $this->curl->exec();
+        $this->assertIsObject($this->curl->getRespJson());
     }
 
     public function testFind(): void
     {
-        /** @todo This test is incomplete. */
-        $this->markTestIncomplete();
+        $this->curl->get("https://httpbin.org/get");
+        $this->curl->exec();
+        $this->assertTrue($this->curl->find("X-Amzn-Trace-Id")->result);
+        $this->assertTrue($this->curl->find(["X-Amzn-Trace-Id"])->result);
     }
 
     public function testGetBetween(): void
     {
-        /** @todo This test is incomplete. */
-        $this->markTestIncomplete();
+        $this->curl->get("https://httpbin.org/get");
+        $this->curl->exec();
+        $this->assertIsString($this->curl->getBetween('"X-Amzn-Trace-Id": "', '"'));
     }
 
     public function testGetBetweens(): void
     {
-        /** @todo This test is incomplete. */
-        $this->markTestIncomplete();
+        $this->curl->get("https://httpbin.org/get");
+        $this->curl->exec();
+        $this->assertIsString($this->curl->getBetween('"X-Amzn-Trace-Id": "', '"'));
     }
 
     public function testGetEffective(): void
     {
-        /** @todo This test is incomplete. */
-        $this->markTestIncomplete();
+        $this->curl->get("https://httpbin.org/get");
+        $this->curl->exec();
+        $this->assertIsString($this->curl->getEffective());
     }
 
     public function testGetHttpCode(): void
     {
-        /** @todo This test is incomplete. */
-        $this->markTestIncomplete();
+        $this->curl->get("https://httpbin.org/status/400");
+        $this->curl->exec();
+        $this->assertIsInt($this->curl->getHttpCode());
+        $this->assertEquals(400, $this->curl->getHttpCode());
     }
 
     public function testGetHeader(): void
     {
-        /** @todo This test is incomplete. */
-        $this->markTestIncomplete();
+        $this->curl->get("https://httpbin.org/response-headers?test_header=val");
+        $this->curl->exec();
+        $this->assertIsString($this->curl->getHeader('test_header'));
+        $this->assertEquals("val", $this->curl->getHeader('test_header'));
     }
 
     public function testGetHeaders(): void
     {
-        /** @todo This test is incomplete. */
-        $this->markTestIncomplete();
+        $this->curl->get("https://httpbin.org/get");
+        $this->curl->exec();
+        $this->assertIsArray($this->curl->getHeaders());
     }
 
     public function testGetCookie(): void
     {
-        /** @todo This test is incomplete. */
-        $this->markTestIncomplete();
+        $this->curl->get("https://httpbin.org/cookies/set/foo/bar");
+        $this->curl->exec();
+        $this->assertIsString($this->curl->getCookie('foo'));
+        $this->assertEquals("bar", $this->curl->getCookie('foo'));
     }
 
     public function testGetCookiesRaw(): void
     {
-        /** @todo This test is incomplete. */
-        $this->markTestIncomplete();
+        $this->curl->get("https://httpbin.org/cookies/set/foo/bar");
+        $this->curl->exec();
+        $this->assertIsString($this->curl->getCookiesRaw());
+        $this->assertEquals("foo=bar", $this->curl->getCookiesRaw());
     }
 
     public function testGetCookiesArray(): void
     {
-        /** @todo This test is incomplete. */
-        $this->markTestIncomplete();
+        $this->curl->get("https://httpbin.org/cookies/set/foo/bar");
+        $this->curl->exec();
+        $this->assertIsArray($this->curl->getCookiesArray());
+        $this->assertArrayHasKey('foo', $this->curl->getCookiesArray());
     }
 }

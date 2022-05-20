@@ -394,15 +394,14 @@ class Curl
         $effective_url = $this->getInfo(\CURLINFO_EFFECTIVE_URL);
         $total_time = $this->getInfo(\CURLINFO_TOTAL_TIME);
         $headers = trim(substr($response, 0, intval($header_size)));
-        if (self::$method_properties[$this->req->method]['res_body']) {
-            $body = substr($response, intval($header_size));
-        }
+        $this->res->info = $this->getInfo();
         $this->res->code = $http_code;
         $this->res->effective_url = $effective_url;
         $this->res->total_time = $total_time;
         $this->res->headers = $headers;
         $this->res->headers_array = $this->parseHeaders($headers);
         if (self::$method_properties[$this->req->method]['res_body']) {
+            $body = substr($response, intval($header_size));
             $this->res->body = $body;
         }
         if (curl_errno($this->req->ch)) {
@@ -504,25 +503,25 @@ class Curl
     }
 
     /**
+     * Curl referer
+     * 
+     * @param bool $bool
+     * @return $this 
+     */
+    public function setReferer(string $ref = null)
+    {
+        $this->setOpt(\CURLOPT_REFERER, $ref);
+
+        return $this;
+    }
+
+    /**
      * Curl auto referer
      * 
      * @param bool $bool
      * @return $this 
      */
     public function setAutoReferer(bool $bool = true)
-    {
-        $this->setOpt(\CURLOPT_AUTOREFERER, $bool);
-
-        return $this;
-    }
-
-    /**
-     * Curl auto referer 2
-     * 
-     * @param bool $bool
-     * @return $this 
-     */
-    public function setAutoReferrer(bool $bool = true)
     {
         $this->setOpt(\CURLOPT_AUTOREFERER, $bool);
 
@@ -589,10 +588,10 @@ class Curl
      * @param bool $autoParse
      * @return $this 
      */
-    public function setProxy(string $proxy, $port = null, bool $autoParse = false)
+    public function setProxy(string $proxy, $port_autoParse = true)
     {
 
-        if ($autoParse && \is_null($port)) {
+        if (is_bool($port_autoParse) && $port_autoParse) {
             $proxy_array = $this->proxyParse($proxy);
 
             if (count($proxy_array) > 0 && is_array($proxy_array)) {
@@ -635,7 +634,8 @@ class Curl
                 $this->setProxyAuth($username, $password);
             }
         } else {
-            $proxyport = \is_null($port) ? $proxy : $proxy . ':' . $port;
+            $port = $port_autoParse;
+            $proxyport = $proxy . ':' . $port;
             $this->setOpt(\CURLOPT_PROXY, $proxyport);
         }
 
@@ -691,12 +691,26 @@ class Curl
      * @param mixed $opt 
      * @return mixed 
      */
-    public function getInfo($opt = null)
+    protected function getInfo($opt = null)
     {
         if (\is_null($opt)) {
             return curl_getinfo($this->req->ch);
         }
         return curl_getinfo($this->req->ch, $opt);
+    }
+
+        /**
+     * Curl getinfo function short version
+     * 
+     * @param mixed $opt 
+     * @return mixed 
+     */
+    public function getInfos($key = null)
+    {
+        if (\is_null($key)) {
+            return $this->res->info;
+        }
+        return $this->res->info[$key];
     }
 
     /**
@@ -711,7 +725,7 @@ class Curl
             if ($remove_line_break) {
                 return $this->htmlCompress($this->res->body);
             }
-            return !isset($this->res->body) ? null : $this->res->body;
+            return $this->res->body;
         } else {
             throw new CurlException("Method {$this->req->method} does not support response body");
         }
