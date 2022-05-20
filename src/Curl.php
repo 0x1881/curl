@@ -81,7 +81,7 @@ class Curl
      */
     public function getCurlError()
     {
-        return isset($this->res->error) ?: $this->res->error;
+        return isset($this->res->error) && !\is_resource($this->req->ch) ?: $this->res->error;
     }
 
     /**
@@ -382,12 +382,12 @@ class Curl
     public function exec(): void
     {
         $response = curl_exec($this->req->ch);
-        $header_size = $this->getInfo(\CURLINFO_HEADER_SIZE);
-        $http_code = $this->getInfo(\CURLINFO_HTTP_CODE);
-        $effective_url = $this->getInfo(\CURLINFO_EFFECTIVE_URL);
-        $total_time = $this->getInfo(\CURLINFO_TOTAL_TIME);
+        $header_size = $this->curlGetInfo(\CURLINFO_HEADER_SIZE);
+        $http_code = $this->curlGetInfo(\CURLINFO_HTTP_CODE);
+        $effective_url = $this->curlGetInfo(\CURLINFO_EFFECTIVE_URL);
+        $total_time = $this->curlGetInfo(\CURLINFO_TOTAL_TIME);
         $headers = trim(substr($response, 0, intval($header_size)));
-        $this->res->info = $this->getInfo();
+        $this->res->info = $this->curlGetInfo();
         $this->res->code = $http_code;
         $this->res->effective_url = $effective_url;
         $this->res->total_time = $total_time;
@@ -401,6 +401,7 @@ class Curl
             $this->res->error = curl_error($this->req->ch);
         }
         curl_close($this->req->ch);
+        $this->req->ch = null;
     }
 
     /**
@@ -677,12 +678,12 @@ class Curl
     }
 
     /**
-     * Curl getinfo function short version
+     * Curl getinfo function private short version
      * 
      * @param mixed $opt 
      * @return mixed 
      */
-    protected function getInfo($opt = null)
+    private function curlGetInfo($opt = null)
     {
         if (\is_null($opt)) {
             return curl_getinfo($this->req->ch);
@@ -691,12 +692,12 @@ class Curl
     }
 
     /**
-     * Curl getinfo function short version
+     * Curl getinfo function public short version
      * 
      * @param mixed $opt 
      * @return mixed 
      */
-    public function getInfos($key = null)
+    public function getInfo($key = null)
     {
         if (\is_null($key)) {
             return $this->res->info;

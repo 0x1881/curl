@@ -37,7 +37,7 @@ echo $curl->getCookie('laravel_session');
 $curl::RAW
 $curl::JSON
 $curl::QUERY
-$curl->getCurlError();
+
 $curl->setDefault();
 $curl->setMethod('GET');
 $curl->setUrl('https://httpbin.org/get');
@@ -54,10 +54,8 @@ $curl->connect($url, $headers);
 $curl->options($url, $headers);
 $curl->trace($url, $headers);
 $curl->exec();
+
 $curl->setOpt(CURLOPT_URL, 'https://httpbin.org/get');
-$curl->getOpt(CURLOPT_URL);
-$curl->getInfo(CURLINFO_HTTP_CODE);
-$curl->getInfos('http_code');
 $curl->setDebug(true);
 $curl->setUserAgent('Googlebot/2.1 (+http://www.google.com/bot.html)');
 $curl->setCookieFile('./cookie.txt');
@@ -73,9 +71,15 @@ $curl->setMaxRedirect(5);
 $curl->setProxy('https://username:password@127.0.0.1:8080/');
 $curl->setProxyType(CURLPROXY_HTTPS);
 $curl->setProxyAuth('username', 'password');
-$curl->getResponse(false);
-$curl->getRespJson(false);
+
 $curl->find('search value', $source);
+
+$curl->getOpt(CURLOPT_URL);
+$curl->getInfo('http_code');
+$curl->getCurlError();
+
+$curl->getResponse();
+$curl->getRespJson();
 $curl->getBetween('<p>', '</p>');
 $curl->getBetweens('<p>', '</p>');
 $curl->getEffective();
