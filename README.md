@@ -37,7 +37,7 @@ echo $curl->getCookie('laravel_session');
 
 ## Metodlar
 
-### [İstek Metodları](#İstek-Metodları)
+### [İstek Metodları](#İstek-Metodlarının-Detayları)
 - [setDefault](#setdefault)
 - [setMethod](#setmethod)
 - [setUrl](#seturl)
@@ -72,7 +72,7 @@ echo $curl->getCookie('laravel_session');
 - [trace](#trace)
 - [exec](#exec)
 
-### [Cevap Metodları](#Cevap-Metodları)
+### [Cevap Metodları](#Cevap-Metodlarının-Detayları)
 - [getInfo](#getInfo)
 - [getCurlError](#getCurlError)
 - [getResponse](#getResponse)
@@ -87,11 +87,11 @@ echo $curl->getCookie('laravel_session');
 - [getCookiesRaw](#getCookiesRaw)
 - [getCookiesArray](#getCookiesArray)
 
-### [Diğer Metodlar](#Diğer-Metodlar)
+### [Diğer Metodlar](#Diğer-Metodların-Detayları)
 - [find](#find)
 - [getOpt](#getOpt)
 
-### [Sabitler](#Sabitler)
+### [Sabitler](#Sabitlerin-Detayları)
 - [RAW](#RAW)
 - [JSON](#JSON)
 - [QUERY](#QUERY)
@@ -99,7 +99,7 @@ echo $curl->getCookie('laravel_session');
 
 # Metodların Ayrıntılı Açıklaması
 
-## İstek Metodları
+## İstek Metodlarının Detayları
 
 ### setDefault()
 Sınıfı varsayılan istek ayarlarına döndürür. Bu sayede her yeni atılan istekte ayarlar tekrar varsayılana dönecek şekilde düzenlenir.
@@ -540,7 +540,7 @@ $curl->exec();
 > ayar kontrolü için exec eklemeden $curl değişkenini print_r metodu ile yazdırın.
 ---
 
-## Cevap Metodları
+## Cevap Metodlarının Detayları
 
 ### getInfo()
 Curl isteği gönderildikten sonra oluşan curl taraflı oluşan detaylı bilgileri döndüren metoddur.
@@ -807,7 +807,7 @@ Array
 ```
 ---
 
-## Diğer Metodlar
+## Diğer Metodların Detayları
 
 ### find()
 İsteğin cevabında bir metin araması yapar varsa obje türünde sonuç döndürür. Tekil bilgi arama yapılabildiği gibi çoğul da yapılabilir. Varsayılan kaynak ```getResponse``` metodundan alınan veridir. İsteğe bağlı 2. argümana farklı kaynak eklenebilir.
@@ -919,7 +919,7 @@ $curl->getOpt(CURLOPT_URL);
 ```
 ---
 
-## Sabitler
+## Sabitlerin Detayları
 
 ### RAW
 İstekte gönderilcek body verisini düz metin olarak algılamasını sağlar.
