@@ -17,10 +17,13 @@ class Curl
     public const QUERY = 'http_build_query';
     public const JSON = 'json_encode';
     public const RAW = 'strval';
-    private const PROXY_REGEX = '/^(?:(?<method>[http|https|socks4|socks5]*?):\/\/)?(?:(?<username>\w+)(?::(?<password>\w*))@)?(?<host>(?!\-)(?:(?:[a-zA-Z\d][a-zA-Z\d\-]{0,61})?[a-zA-Z\d]\.){1,126}(?!\d+)[a-zA-Z\d]{1,63}|((?:\d{1,3})(?:\.\d{1,3}){3}))(?::(?<port>\d{1,5}))$/ms';
-
     public $req = null;
     public $res = null;
+    
+    /**
+     * Proxy parser regex
+     */
+    private const PROXY_REGEX = '/^(?:(?<method>[http|https|socks4|socks5]*?):\/\/)?(?:(?<username>\w+)(?::(?<password>\w*))@)?(?<host>(?!\-)(?:(?:[a-zA-Z\d][a-zA-Z\d\-]{0,61})?[a-zA-Z\d]\.){1,126}(?!\d+)[a-zA-Z\d]{1,63}|((?:\d{1,3})(?:\.\d{1,3}){3}))(?::(?<port>\d{1,5}))$/ms';
 
     /**
      * Curl request method properties
@@ -420,17 +423,6 @@ class Curl
     }
 
     /**
-     * Curl getopt function
-     * 
-     * @param mixed $opt 
-     * @return $this  
-     */
-    public function getOpt($opt)
-    {
-        return $this->req->opt[$opt];
-    }
-
-    /**
      * Curl debug function
      * 
      * @param bool $bool 
@@ -567,7 +559,7 @@ class Curl
      * @param int $int
      * @return $this 
      */
-    public function setMaxRedirect(int $int = 5)
+    public function setMaxRedirect(int $int = 20)
     {
         $this->setOpt(\CURLOPT_MAXREDIRS, $int);
 
@@ -678,17 +670,17 @@ class Curl
     }
 
     /**
-     * Curl getinfo function private short version
+     * Curl getOpt function
      * 
      * @param mixed $opt 
      * @return mixed 
      */
-    private function curlGetInfo($opt = null)
+    public function getOpt($opt = null)
     {
         if (\is_null($opt)) {
-            return curl_getinfo($this->req->ch);
+            return $this->req->opt;
         }
-        return curl_getinfo($this->req->ch, $opt);
+        return $this->req->opt[$opt];
     }
 
     /**
@@ -739,91 +731,6 @@ class Curl
         } else {
             throw new CurlException("Response json parse error");
         }
-    }
-
-    /**
-     * Find string from request response
-     * 
-     * @param mixed $search_datas 
-     * @param mixed $source 
-     * @return mixed 
-     * @throws C4NException 
-     */
-    public function find($search_datas, $source = null)
-    {
-        $json = new stdClass();
-        $json->result = false;
-        if (\is_null($source)) {
-            $source = $this->getResponse();
-        }
-
-        if (\is_array($search_datas)) {
-            foreach ($search_datas as $search_data) {
-                $search_data = \preg_quote($search_data, '/');
-                if (\preg_match('/' . $search_data . '/si', $source) || $this->contains($search_data, $source)) {
-                    $json->result = true;
-                    $json->finded = $search_data;
-                }
-            }
-        } else {
-            $search_data = \preg_quote($search_datas, '/');
-            if (\preg_match('/' . $search_data . '/si', $source) || $this->contains($search_data, $source)) {
-                $json->result = true;
-                $json->finded = $search_datas;
-            }
-        }
-
-        return $json;
-    }
-
-    /**
-     * Find string from text
-     * 
-     * @param mixed $needle 
-     * @param mixed $haystack 
-     * @return bool 
-     */
-    private function contains($needle, $haystack)
-    {
-        return strpos($haystack, $needle) !== false;
-    }
-
-    /**
-     * Getting string from request response
-     * 
-     * @param string $start
-     * @param string $end
-     * @return string
-     */
-    public function getBetween(string $start = '', string $end = '', bool $remove_line_break = false): string
-    {
-        $str = $this->getResponse($remove_line_break);
-        $string = ' ' . $str;
-        $ini = strpos($string, $start);
-        if ($ini == 0) return '';
-        $ini += strlen($start);
-        $len = strpos($string, $end, $ini) - $ini;
-        return substr($string, $ini, $len);
-    }
-
-    /**
-     * Getting strings from request response
-     * 
-     * @param string $start 
-     * @param string $end 
-     * @return array 
-     */
-    public function getBetweens(string $start = '', string $end = '', bool $remove_line_break = false): array
-    {
-        $n = explode($start, $this->getResponse($remove_line_break));
-        $result = [];
-        foreach ($n as $val) {
-            $pos = strpos($val, $end);
-            if ($pos !== false) {
-                $result[] = substr($val, 0, $pos);
-            }
-        }
-        return $result ?? [];
     }
 
     /**
@@ -938,6 +845,79 @@ class Curl
     }
 
     /**
+     * Find string from request response
+     * 
+     * @param mixed $search_datas 
+     * @param mixed $source 
+     * @return mixed 
+     * @throws C4NException 
+     */
+    public function find($search_datas, $source = null)
+    {
+        $json = new stdClass();
+        $json->result = false;
+        if (\is_null($source)) {
+            $source = $this->getResponse();
+        }
+
+        if (\is_array($search_datas)) {
+            foreach ($search_datas as $search_data) {
+                $search_data_regex = \preg_quote($search_data, '/');
+                if (\preg_match('/' . $search_data_regex . '/si', $source) || $this->contains($search_data_regex, $source)) {
+                    $json->result = true;
+                    $json->finded[] = $search_data;
+                }
+            }
+        } else {
+            $search_data = \preg_quote($search_datas, '/');
+            if (\preg_match('/' . $search_data . '/si', $source) || $this->contains($search_data, $source)) {
+                $json->result = true;
+                $json->finded = $search_datas;
+            }
+        }
+
+        return $json;
+    }
+
+    /**
+     * Getting string from request response
+     * 
+     * @param string $start
+     * @param string $end
+     * @return string
+     */
+    public function getBetween(string $start = '', string $end = '', bool $remove_line_break = false): string
+    {
+        $str = $this->getResponse($remove_line_break);
+        $string = ' ' . $str;
+        $ini = strpos($string, $start);
+        if ($ini == 0) return '';
+        $ini += strlen($start);
+        $len = strpos($string, $end, $ini) - $ini;
+        return substr($string, $ini, $len);
+    }
+
+    /**
+     * Getting strings from request response
+     * 
+     * @param string $start 
+     * @param string $end 
+     * @return array 
+     */
+    public function getBetweens(string $start = '', string $end = '', bool $remove_line_break = false): array
+    {
+        $n = explode($start, $this->getResponse($remove_line_break));
+        $result = [];
+        foreach ($n as $val) {
+            $pos = strpos($val, $end);
+            if ($pos !== false) {
+                $result[] = substr($val, 0, $pos);
+            }
+        }
+        return $result ?? [];
+    }
+
+    /**
      * Parse request response headers
      * 
      * @param mixed $headers
@@ -994,6 +974,18 @@ class Curl
     }
 
     /**
+     * Find string from text
+     * 
+     * @param mixed $needle 
+     * @param mixed $haystack 
+     * @return bool 
+     */
+    private function contains($needle, $haystack)
+    {
+        return strpos($haystack, $needle) !== false;
+    }
+
+    /**
      * Get const name in class
      * 
      * @param mixed $value 
@@ -1005,5 +997,19 @@ class Curl
         $constants = array_flip($class->getConstants());
 
         return $constants[$value];
+    }
+
+    /**
+     * Curl getinfo function private short version
+     * 
+     * @param mixed $opt 
+     * @return mixed 
+     */
+    private function curlGetInfo($opt = null)
+    {
+        if (\is_null($opt)) {
+            return curl_getinfo($this->req->ch);
+        }
+        return curl_getinfo($this->req->ch, $opt);
     }
 }
