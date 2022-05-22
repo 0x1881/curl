@@ -77,8 +77,6 @@ echo $curl->getCookie('laravel_session');
 - [getCurlError](#getCurlError)
 - [getResponse](#getResponse)
 - [getRespJson](#getRespJson)
-- [getBetween](#getBetween)
-- [getBetweens](#getBetweens)
 - [getEffective](#getEffective)
 - [getHttpCode](#getHttpCode)
 - [getHeader](#getHeader)
@@ -86,6 +84,8 @@ echo $curl->getCookie('laravel_session');
 - [getCookie](#getCookie)
 - [getCookiesRaw](#getCookiesRaw)
 - [getCookiesArray](#getCookiesArray)
+- [getBetween](#getBetween)
+- [getBetweens](#getBetweens)
 
 ### [Diğer Metodlar](#Diğer-Metodların-Detayları)
 - [find](#find)
@@ -235,8 +235,6 @@ $curl->setCookieJar(__DIR__.DIRECTORY_SEPARATOR.'cookies.txt');
 İsteğin yönlendirme yapıyorsa izin vermek için kullanılır. Varsayılan ```false``` kapalıdır.
 
 ```php
-$curl->setFollow();
-$curl->setFollow(false);
 $curl->setFollow(true);
 ```
 ---
@@ -245,8 +243,6 @@ $curl->setFollow(true);
 İstek aktarımını çıktı edilmesini ya da edilmemesini sağlar. Varsayılan ```false``` kapalıdır.
 
 ```php
-$curl->setReturn();
-$curl->setReturn(false);
 $curl->setReturn(true);
 ```
 ---
@@ -268,7 +264,7 @@ $curl->setAutoReferer(true);
 ---
 
 ### setTimeout()
-Curl zaman aşımını saniye cinsinden ayarlar.
+Curl işlevlerinin zaman aşımını saniye cinsinden ayarlar.
 
 ```php
 $curl->setTimeout(5);
@@ -292,7 +288,7 @@ $curl->setMaxConnect(5);
 ---
 
 ### setMaxRedirect()
-Maksimum eş zamanlı bağlantı sayısını ayarlar. Varsayılan değer ```20```.
+Maksimum yönlendirme sayısını ayarlar. Varsayılan değer ```20```.
 
 ```php
 $curl->setMaxRedirect(5);
@@ -377,7 +373,10 @@ $curl->send('POST', 'https://httpbin.org/get', $headers, $body, $curl::JSON);
 
 ### get()
 ```GET``` istek metodunu kullanarak istek atar. Bu istek body kabul etmez.
-
+```php
+$curl->get('https://httpbin.org/get');
+```
+veya
 ```php
 $headers = [
     'User-agent: Googlebot/2.1 (+http://www.google.com/bot.html)'
@@ -638,55 +637,6 @@ $curl->getRespJson(false, JSON_PRETTY_PRINT);
 ```
 ---
 
-### getBetween()
-İstekten alınan cevaptan, belirtilen aralıktaki metni bulup döndürür. Tekil değerinde string veri döndürür.
-
-```php
-
-// <p>asd</p>
-
-$curl->getBetween('<p>', '</p>');
-
-//asd
-```
-3. argüman getResponse metodunun 1. argümanına eşittir. Cevaptaki fazla boşlukları siler.
-```php
-$curl->getBetween('<p>', '</p>', true);
-```
----
-
-### getBetweens()
-İstekten alınan cevaptan, belirtilen aralıktaki metni bulup döndürür. Çoğul değerinde array veri döndürür. Belirtilen aralıklar birden fazla hepsini alır.
-
-```php
-/*
-<p>test</p>
-<p>test 2</p>
-*/
-
-$curl->getBetween('<p>', '</p>');
-/*
-Array
-(
-    [0] => test
-    [1] => test 2
-)
-*/
-```
-3. argüman getResponse metodunun 1. argümanına eşittir. Cevaptaki fazla boşlukları siler.
-```php
-// <p>test</p><p>test 2</p>
-$curl->getBetween('<p>', '</p>', true);
-/*
-Array
-(
-    [0] => test
-    [1] => test 2
-)
-*/
-```
----
-
 ### getEffective()
 İstekte yönlendirme varsa son gidilen kaynağı bize döndürür. Bunun için setReturn metodu true ayarlanmalıdır.
 
@@ -802,6 +752,55 @@ $curl->getCookiesArray(0);
 Array
 (
     [laravel_session] => eyJpdiI6InV5bGRQNFJ4c01TYjZwT0I0amxzS1E9PSIsInZhbHVlIjoiZFI2WWpVWGxmTldDcVJvVlwvbVJicXBxM0pjRkVRUlBRKzZWb1BkbzliZHBVdTlmUEV4UzZkaFVMbmlRTHNYczFOZm5HSWkwRXhjb3BJRGI1NGRyM2tnPT0iLCJtYWMiOiJjMjAwMWIyMGIxYmQwYzkxMGQyNGJhMDZmZDJiNThjNGZhMTUyZWVjZDlkNjg5ZWVjYjY2MGE1ZTlmZDAxOGNmIn0=
+)
+*/
+```
+---
+
+### getBetween()
+İstekten alınan cevaptan, belirtilen aralıktaki metni bulup döndürür. Tekil değerinde string veri döndürür.
+
+```php
+
+// <p>asd</p>
+
+$curl->getBetween('<p>', '</p>');
+
+//asd
+```
+3. argüman getResponse metodunun 1. argümanına eşittir. Cevaptaki fazla boşlukları siler.
+```php
+$curl->getBetween('<p>', '</p>', true);
+```
+---
+
+### getBetweens()
+İstekten alınan cevaptan, belirtilen aralıktaki metni bulup döndürür. Çoğul değerinde array veri döndürür. Belirtilen aralıklar birden fazla hepsini alır.
+
+```php
+/*
+<p>test</p>
+<p>test 2</p>
+*/
+
+$curl->getBetweens('<p>', '</p>');
+/*
+Array
+(
+    [0] => test
+    [1] => test 2
+)
+*/
+```
+3. argüman getResponse metodunun 1. argümanına eşittir. Cevaptaki fazla boşlukları siler.
+```php
+// <p>test</p><p>test 2</p>
+$curl->getBetweens('<p>', '</p>', true);
+/*
+Array
+(
+    [0] => test
+    [1] => test 2
 )
 */
 ```
