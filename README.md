@@ -46,6 +46,7 @@ echo $curl->getCookie('laravel_session');
 - [setOpt](#setOpt)
 - [setDebug](#setDebug)
 - [setUserAgent](#setUserAgent)
+- [setCookie](#setCookie)
 - [setCookieFile](#setCookieFile)
 - [setCookieJar](#setCookieJar)
 - [setFollow](#setFollow)
@@ -215,8 +216,31 @@ $curl->setUserAgent('Googlebot/2.1 (+http://www.google.com/bot.html)');
 ```
 ---
 
+### setCookie()
+İsteğin ```Cookie``` başlığına belirtilmiş çerez bilgisini ekler.
+
+```php
+$cookies = "XSRF-TOKEN=OWY4NmQwODE4ODRMjJjZDE1ZDZMGYwMGEwOA==; ci_session=esa2tb3mviicp2cb5abz32g";
+$curl->setCookie($cookies);
+```
+veya
+```php
+$cookie_name = 'XSRF-TOKEN';
+$cookie_value = 'OWY4NmQwODE4ODRMjJjZDE1ZDZMGYwMGEwOA==';
+$curl->setCookie($cookie_name, $cookie_value);
+```
+veya
+```php
+$cookies = [
+    'XSRF-TOKEN' => 'OWY4NmQwODE4ODRMjJjZDE1ZDZMGYwMGEwOA==',
+    'ci_session' => 'esa2tb3mviicp2cb5abz32g'
+];
+$curl->setCookie($cookies);
+```
+---
+
 ### setCookieFile()
-Netscape formatındaki cookie bilgileri eklenmiş dosyadan, cookie verilerini alıp isteğer uyarlar.
+Netscape formatındaki cookie bilgileri eklenmiş dosyadan, cookie verilerini alıp isteğe uyarlar.
 
 ```php
 $curl->setCookieFile(__DIR__.DIRECTORY_SEPARATOR.'cookies.txt');
@@ -248,7 +272,7 @@ $curl->setReturn(true);
 ---
 
 ### setReferer()
-İstekte kullanılacak "Referer: " header içeriğini ayarlar.
+İstekte kullanılacak ```Referer``` başlığını ayarlar.
 
 ```php
 $curl->setReferer('https://httpbin.org/');
@@ -256,7 +280,7 @@ $curl->setReferer('https://httpbin.org/');
 ---
 
 ### setAutoReferer()
-İstek yönlendirme yapmışsa istekte kullanılacak "Referer: " header içeriğini otomatik ayarlar. Varsayılan ```false``` kapalıdır.
+İstek yönlendirme yapmışsa istekte kullanılacak ```Referer``` başlığını otomatik ayarlar. Varsayılan ```false``` kapalıdır.
 
 ```php
 $curl->setAutoReferer(true);
@@ -531,7 +555,7 @@ $curl->trace('https://httpbin.org/options', $headers);
 ---
 
 ### exec()
-Bu metodun çalışması herhangi bir isteğin ayarları yapıldıktan sonra  zorunludur. ```exec``` metodu en sona eklenmeden istek gönderilmez. Curl kütüphanesindeki mantıkla çalışmaktadır. Zorunluluk sebebi, isteği göndermeden ayarların doğru olup olmadığını daha rahat kontrol etmek içindir.
+Bu metodun çalışması herhangi bir isteğin ayarları yapıldıktan sonra  zorunludur. ```exec``` metodu en sona eklenmeden istek gönderilmez. Bu sınıf curl kütüphanesindeki mantıkla çalışmaktadır. Zorunluluk sebebi, isteği göndermeden ayarların doğru olup olmadığını daha rahat kontrol etmek içindir.
 
 ```php
 $curl->exec();

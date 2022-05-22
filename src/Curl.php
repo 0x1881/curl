@@ -19,7 +19,7 @@ class Curl
     public const RAW = 'strval';
     public $req = null;
     public $res = null;
-    
+
     /**
      * Proxy parser regex
      */
@@ -432,6 +432,29 @@ class Curl
     {
 
         $this->setOpt(\CURLOPT_VERBOSE, $bool);
+
+        return $this;
+    }
+
+    /**
+     * Curl cookie set from string
+     * 
+     * @param mixed $cookie 
+     * @param mixed $value 
+     * @return $this 
+     */
+    public function setCookie($cookie, $value = 'cookie_no_value')
+    {
+        if (is_string($cookie) && $value == 'cookie_no_value') {
+            $this->setOpt(\CURLOPT_COOKIE, $cookie);
+        } else if (is_string($cookie) && $value !== 'cookie_no_value') {
+            $this->setOpt(\CURLOPT_COOKIE, $cookie . '=' . $value);
+        } elseif (is_array($cookie)) {
+            $cookie = http_build_query($cookie, '', '; ');
+            $this->setOpt(\CURLOPT_COOKIE, $cookie);
+        } else {
+            throw new \Exception('Cookies name and value must be string or array');
+        }
 
         return $this;
     }
@@ -937,8 +960,9 @@ class Curl
                 $t = explode(':', $v2, 2);
                 if (isset($t[1])) {
                     if (strtolower(trim($t[0])) == 'set-cookie') {
-                        \preg_match('@^([^=]+)=([^;]+);(.+)$@', trim($t[1]), $parts);
-                        $head[$k1]["set_cookie"][$parts[1]] = $parts[2];
+                        \preg_match('@^(?<cookie_name>[^=]+)=(?<cookie_value>[^;]+)?;(.+)$@', trim($t[1]), $cookie_parts);
+                        extract($cookie_parts);
+                        $head[$k1]["set_cookie"][$cookie_name] = $cookie_value;
                     } else {
                         $head[$k1][trim($t[0])] = trim($t[1]);
                     }
