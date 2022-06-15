@@ -5,6 +5,8 @@ It provides functions that can take several types of parameters to configure an 
 
 After setting all the parameters, the class can execute sending of the configured HTTP request.
 
+Coded for educational purposes. The user is responsible for the abuse.
+
 --- 
 
 ## Install

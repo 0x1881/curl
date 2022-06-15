@@ -1,5 +1,15 @@
 # PHP Curl
-Bot yapımı için kodlanmış bir curl sınıfıdır.
+[![en](https://img.shields.io/badge/lang-en-red.svg)](https://github.com/0x1881/curl/blob/master/README.md)
+[![tr](https://img.shields.io/badge/lang-tr-green.svg)](https://github.com/0x1881/curl/blob/master/README.tr.md)
+
+Bu paket, Curl kullanarak belirli bir API'ye HTTP istekleri gönderebilir.
+
+Sınıfın bir HTTP API'sine göndereceği isteği yapılandırmak için birkaç tür parametre alabilen işlevler sağlar.
+
+Tüm parametreleri ayarladıktan sonra sınıf, yapılandırılmış HTTP isteğinin gönderilmesini gerçekleştirebilir.
+
+Eğitim amaçlı kodlanmıştır. Kötüye kullanımdan dolayı kullanan kişi sorumludur.
+
 --- 
 
 ## Kurulum
