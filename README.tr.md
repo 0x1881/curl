@@ -4,7 +4,7 @@
 
 Bu paket, Curl kullanarak belirli bir API'ye HTTP istekleri gönderebilir.
 
-Sınıfın bir HTTP API'sine göndereceği isteği yapılandırmak için birkaç tür parametre alabilen işlevler sağlar.
+Sınıf bir HTTP API'sine göndereceği isteği yapılandırmak için birkaç tür parametre alabilen işlevler sağlar.
 
 Tüm parametreleri ayarladıktan sonra sınıf, yapılandırılmış HTTP isteğinin gönderilmesini gerçekleştirebilir.
 
