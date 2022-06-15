@@ -1,19 +1,14 @@
 # PHP Curl
-This package can send HTTP requests to a given site using Curl.
-
-It provides functions that can take several types of parameters to configure an HTTP request to that the class will send to an HTTP api.
-
-After setting all the parameters, the class can execute sending of the configured HTTP request.
-
+Bot yapımı için kodlanmış bir curl sınıfıdır.
 --- 
 
-## Install
+## Kurulum
 ```ps1
 composer require 0x1881/curl
 ```
 --- 
 
-## Using
+## Örnek Kullanım
 ```php
 <?php
 
@@ -40,9 +35,9 @@ echo $curl->getCookie('laravel_session');
 ```
 --- 
 
-## Methods
+## Metodlar
 
-### [Request Methods](#Details-of-Request-Methods)
+### [İstek Metodları](#İstek-Metodlarının-Detayları)
 - [setDefault](#setdefault)
 - [setMethod](#setmethod)
 - [setUrl](#seturl)
@@ -78,7 +73,7 @@ echo $curl->getCookie('laravel_session');
 - [trace](#trace)
 - [exec](#exec)
 
-### [Response Methods](#Details-of-Response-Methods)
+### [Cevap Metodları](#Cevap-Metodlarının-Detayları)
 - [getInfo](#getInfo)
 - [getCurlError](#getCurlError)
 - [getResponse](#getResponse)
@@ -93,22 +88,22 @@ echo $curl->getCookie('laravel_session');
 - [getBetween](#getBetween)
 - [getBetweens](#getBetweens)
 
-### [Other Methods](#Details-of-Other-Methods)
+### [Diğer Metodlar](#Diğer-Metodların-Detayları)
 - [find](#find)
 - [getOpt](#getOpt)
 
-### [Constants](#Details-of-Constants)
+### [Sabitler](#Sabitlerin-Detayları)
 - [RAW](#RAW)
 - [JSON](#JSON)
 - [QUERY](#QUERY)
 --- 
 
-# Detailed Description of Methods
+# Metodların Ayrıntılı Açıklaması
 
-## Details of Request Methods
+## İstek Metodlarının Detayları
 
 ### setDefault()
-Returns the class to its default request settings. It resets the settings to default on every request made.
+Sınıfı varsayılan istek ayarlarına döndürür. Bu sayede, her yeni atılan istekte ayarlar tekrar varsayılana dönecek şekilde düzenlenir.
 
 ```php
 $curl->setDefault();
@@ -116,11 +111,11 @@ $curl->setDefault();
 ---
 
 ### setMethod()
-Used to specify the request type.
+İsteğin türünü belirtir.
 
 #### Kabul edilen türler
 
-- ```GET```, ```POST```, ```PUT```, ```DELETE```, ```PATCH```, ```HEAD```, ```CONNECT```, ```OPTIONS```, ```TRACE```
+- ``GET``, ``POST``, ``PUT``, ``DELETE``, ``PATCH``, ``HEAD``, ``CONNECT``, ``OPTIONS``, ``TRACE``
 
 ```php
 $curl->setMethod('GET');
@@ -128,7 +123,7 @@ $curl->setMethod('GET');
 ---
 
 ### setUrl()
-Specifies the destination of the request.
+İsteğin hedefini belirtir.
 
 ```php
 $curl->setUrl('https://httpbin.org/get');
@@ -136,16 +131,16 @@ $curl->setUrl('https://httpbin.org/get');
 ---
 
 ### setHeader()
-Adds header to the request.
+İsteğe header ekler.
 
 ```php
 $curl->setHeader('Test-Header: value');
 ```
-or
+veya
 ```php
 $curl->setHeader('Test-Header', 'value');
 ```
-or
+veya
 ```php
 $headers = [
     'Test-Header: value',
@@ -156,13 +151,13 @@ $curl->setHeader($headers);
 ---
 
 ### setBody()
-Adds body to the request. Applies to certain request methods.
+İsteğe body ekler. Belirli istek metodları için geçerlidir.
 
-**Raw**: The specified body is set for the request as direct plain text.
+**Raw**: Belirtilen body düz metin olarak ayarlanır.
 ```php
 $curl->setBody('name=Mehmet&lastname=Can');
 ```
-**Query 1**: Sets a body of content type ```x-www-form-urlencoded```. Added as an example comment. If the data is of type array, the method will convert it to the format we specified.
+**Query 1**: ``x-www-form-urlencoded`` içerik türünde bir body ayarlar. Örnek yorum olarak eklenmiştir. Eğer veri array türde ise metod onu belirttiğimiz formata dönüştürecektir.
 ```php
 $body = [
     'name' => 'Mehmet',
@@ -173,7 +168,7 @@ $curl->setBody($body);
 
 // name=Mehmet&lastname=Can
 ```
-**Query 2**: Sets a body of content type ```x-www-form-urlencoded```. Added as an example comment.
+**Query 2**: ``x-www-form-urlencoded`` içerik türünde bir body ayarlar. Örnek, yorum olarak eklenmiştir.
 ```php
 $body = [
     'name' => 'Mehmet',
@@ -184,7 +179,7 @@ $curl->setBody($body, $curl::QUERY);
 
 // name=Mehmet&lastname=Can
 ```
-**_Json_**: Sets a body in ```json``` format. Added as an example comment.
+**_Json_**: ``json`` formatında bir body ayarlar. Örnek, yorum olarak eklenmiştir.
 ```php
 $body = [
     'name' => 'Mehmet',
@@ -198,7 +193,7 @@ $curl->setBody($body, $curl::JSON);
 ---
 
 ### setOpt()
-It is the method that makes the ``curl_setopt`` method of the curl library practical. CURLOPT constants can be used optionally.
+Curl kütüphanesinin ``curl_setopt`` metodunu pratikleştiren metoddur. İsteğe göre Curlopt sabitleri kullanılabilir.
 
 ```php
 $curl->setOpt(CURLOPT_URL, 'https://httpbin.org/get');
@@ -206,7 +201,7 @@ $curl->setOpt(CURLOPT_URL, 'https://httpbin.org/get');
 ---
 
 ### setDebug()
-It sets the constant CURLOPT_VERBOSE from the curl library to true, so it returns optional debug data on terminal lines. The default ``false`` is off.
+Curl kütüphanesinden CURLOPT_VERBOSE sabitini true olarak ayarlar bu sayede terminal satırlarında isteğe ait debug verilerini döndürür. Varsayılan ``false`` kapalıdır.
 
 ```php
 $curl->setDebug(true);
@@ -214,7 +209,7 @@ $curl->setDebug(true);
 ---
 
 ### setUserAgent()
-Sets the ``User-Agent`` header of the request.
+İsteğin user-agent başlığına istenen ua bilgisini ekler.
 
 ```php
 $curl->setUserAgent('Googlebot/2.1 (+http://www.google.com/bot.html)');
@@ -222,19 +217,19 @@ $curl->setUserAgent('Googlebot/2.1 (+http://www.google.com/bot.html)');
 ---
 
 ### setCookie()
-Adds the specified cookie information to the ``Cookie`` header of the request.
+İsteğin ``Cookie`` başlığına belirtilmiş çerez bilgisini ekler.
 
 ```php
 $cookies = "XSRF-TOKEN=OWY4NmQwODE4ODRMjJjZDE1ZDZMGYwMGEwOA==; ci_session=esa2tb3mviicp2cb5abz32g";
 $curl->setCookie($cookies);
 ```
-or
+veya
 ```php
 $cookie_name = 'XSRF-TOKEN';
 $cookie_value = 'OWY4NmQwODE4ODRMjJjZDE1ZDZMGYwMGEwOA==';
 $curl->setCookie($cookie_name, $cookie_value);
 ```
-or
+veya
 ```php
 $cookies = [
     'XSRF-TOKEN' => 'OWY4NmQwODE4ODRMjJjZDE1ZDZMGYwMGEwOA==',
@@ -245,7 +240,7 @@ $curl->setCookie($cookies);
 ---
 
 ### setCookieFile()
-It takes the cookie data from the file with the cookie information in Netscape format and adapts it to the request.
+Netscape formatındaki cookie bilgileri eklenmiş dosyadan, cookie verilerini alıp isteğe uyarlar.
 
 ```php
 $curl->setCookieFile(__DIR__.DIRECTORY_SEPARATOR.'cookies.txt');
@@ -253,7 +248,7 @@ $curl->setCookieFile(__DIR__.DIRECTORY_SEPARATOR.'cookies.txt');
 ---
 
 ### setCookieJar()
-It adds and saves the cookie information in Netscape format to the specified file.
+Netscape formatındaki cookie bilgilerini belirtilmiş dosyaya ekler ve kaydeder.
 
 ```php
 $curl->setCookieJar(__DIR__.DIRECTORY_SEPARATOR.'cookies.txt');
@@ -261,7 +256,7 @@ $curl->setCookieJar(__DIR__.DIRECTORY_SEPARATOR.'cookies.txt');
 ---
 
 ### setFollow()
-Used to allow if the request is redirecting. The default ``false`` is off.
+İstek eğer yönlendirme yapıyorsa izin vermek için kullanılır. Varsayılan ``false`` kapalıdır.
 
 ```php
 $curl->setFollow(true);
@@ -269,7 +264,7 @@ $curl->setFollow(true);
 ---
 
 ### setReturn()
-Allows the request transfer to be output or not. The default ``false`` is off.
+İstek aktarımını çıktı edilmesini ya da edilmemesini sağlar. Varsayılan ``false`` kapalıdır.
 
 ```php
 $curl->setReturn(true);
@@ -277,7 +272,7 @@ $curl->setReturn(true);
 ---
 
 ### setReferer()
-Sets the ``Referer`` header to use in the request.
+İstekte kullanılacak ``Referer`` başlığını ayarlar.
 
 ```php
 $curl->setReferer('https://httpbin.org/');
@@ -285,7 +280,7 @@ $curl->setReferer('https://httpbin.org/');
 ---
 
 ### setAutoReferer()
-If the request has redirected, it automatically sets the ``Referer`` header to be used in the request. The default ``false`` is off.
+İstek yönlendirme yapmışsa istekte kullanılacak ``Referer`` başlığını otomatik ayarlar. Varsayılan ``false`` kapalıdır.
 
 ```php
 $curl->setAutoReferer(true);
@@ -293,7 +288,7 @@ $curl->setAutoReferer(true);
 ---
 
 ### setTimeout()
-Sets the timeout of curl functions in seconds.
+Curl işlevlerinin zaman aşımını saniye cinsinden ayarlar.
 
 ```php
 $curl->setTimeout(5);
@@ -301,7 +296,7 @@ $curl->setTimeout(5);
 ---
 
 ### setConnectTimeout()
-Sets the attempt time, in seconds, of the request.
+İsteğin saniye cinsinden denenme süresini ayarlar.
 
 ```php
 $curl->setConnectTimeout(5);
@@ -309,7 +304,7 @@ $curl->setConnectTimeout(5);
 ---
 
 ### setMaxConnect()
-Sets the maximum number of simultaneous connections.
+Maksimum eş zamanlı bağlantı sayısını ayarlar.
 
 ```php
 $curl->setMaxConnect(5);
@@ -317,7 +312,7 @@ $curl->setMaxConnect(5);
 ---
 
 ### setMaxRedirect()
-Sets the maximum number of redirects. The default value is ``20``.
+Maksimum yönlendirme sayısını ayarlar. Varsayılan değer ``20``.
 
 ```php
 $curl->setMaxRedirect(5);
@@ -325,7 +320,7 @@ $curl->setMaxRedirect(5);
 ---
 
 ### setProxy()
-It allows the request to be connected via proxy. It can auto parse. Only the 1st argument should be used when auto-parsing. It uses the default ``HTTPS`` proxy type.
+İsteğin proxy aracılığı ile bağlanmasını sağlar. Oto ayrıştırma yapabilir. Oto ayrıştırma yapılırken sadece 1. argüman kullanılmalıdır. Varsayılan ``HTTPS`` proxy türü kullanır.
 
 ```php
 $curl->setProxy('127.0.0.1', '8080');
@@ -334,14 +329,14 @@ veya (oto ayrıştılır)
 ```php
 $curl->setProxy('127.0.0.1:8080');
 ```
-or proxy type can be specified. (auto parse)
+veya proxy türü belirtilebilir. (oto ayrıştılır)
 ```php
 $curl->setProxy('http://127.0.0.1:8080');
 $curl->setProxy('https://127.0.0.1:8080');
 $curl->setProxy('socks4://127.0.0.1:8080');
 $curl->setProxy('socks5://127.0.0.1:8080');
 ```
-or authentication with username and password. (auto parse)
+veya kullanıcı adı ve şifre ile kimlik doğrulaması yapılabilir. (oto ayrıştılır)
 ```php
 $curl->setProxy('username:password@127.0.0.1:8080');
 $curl->setProxy('http://username:password@127.0.0.1:8080');
@@ -352,7 +347,7 @@ $curl->setProxy('socks5://username:password@127.0.0.1:8080');
 ---
 
 ### setProxyType()
-It determines the proxy type while allowing the request to be connected via proxy. Curl constants must be used.
+İsteğin proxy aracılığı ile bağlanmasını sağlarken proxy türünü belirler. Curl sabitleri kullanılmalıdır.
 
 ```php
 $curl->setProxyType(CURLPROXY_HTTPS);
@@ -360,23 +355,23 @@ $curl->setProxyType(CURLPROXY_HTTPS);
 ---
 
 ### setProxyAuth()
-It sets the proxy authentication information while allowing the request to connect via proxy.
+İsteğin proxy aracılığı ile bağlanmasını sağlarken proxy kimlik doğrulama bilgilerini ayarlar.
 
 ```php
 $curl->setProxyAuth('user:pass');
 ```
-or
+veya
 ```php
 $curl->setProxyAuth('user', 'pass');
 ```
-or
+veya
 ```php
 $curl->setProxyAuth('user');
 ```
 ---
 
 ### send()
-It is the function where requests are made. It is used to implement request methods. All request methods in the class send requests using this method.
+İsteklerin yapıldığı fonksiyondur. İstek metodlarını pratikleştirmek için kullanılır. Sınıftaki tüm istek metodları bu metodu kullanarak istek göndermektedir.
 
 ```php
 $headers = [
@@ -385,7 +380,7 @@ $headers = [
 
 $curl->send('GET', 'https://httpbin.org/get', $headers);
 ```
-or
+veya
 ```php
 $headers = [
     'User-agent: Googlebot/2.1 (+http://www.google.com/bot.html)'
@@ -401,7 +396,7 @@ $curl->send('POST', 'https://httpbin.org/get', $headers, $body, $curl::JSON);
 ---
 
 ### get()
-Sends a request using the ``GET`` request method. This request does not accept the request body.
+``GET`` istek metodunu kullanarak istek atar. Bu istek body kabul etmez.
 ```php
 $curl->get('https://httpbin.org/get');
 ```
@@ -422,7 +417,7 @@ $curl->get('https://httpbin.org/get', $headers);
 ---
 
 ### post()
-It sends a request using the ``POST`` request method. This request accepts the request body. The setBody method is valid for all request methods that can be sent body.
+``POST`` istek metodunu kullanarak istek atar. Bu istek body kabul eder. setBody metodu body gönderilebilen tüm istek metodlarında geçerlidir.
 
 ```php
 $headers = [
@@ -440,7 +435,7 @@ $curl->post('https://httpbin.org/post', $headers, $body, $curl::JSON);
 ---
 
 ### put()
-Throws a request using the ``PUT`` request method. This request accepts the request body. The setBody method is valid for all request methods that can be sent body.
+``PUT`` istek metodunu kullanarak istek atar. Bu istek body kabul eder. setBody metodu body gönderilebilen tüm istek metodlarında geçerlidir.
 
 ```php
 $headers = [
@@ -458,7 +453,7 @@ $curl->put('https://httpbin.org/put', $headers, $body, $curl::JSON);
 ---
 
 ### put()
-It sends a request using the ``PUT`` request method. This request accepts the request body. The setBody method is valid for all request methods that can be sent body.
+``PUT`` istek metodunu kullanarak istek atar. Bu istek body kabul eder. setBody metodu body gönderilebilen tüm istek metodlarında geçerlidir.
 
 ```php
 $headers = [
@@ -476,7 +471,7 @@ $curl->put('https://httpbin.org/put', $headers, $body, $curl::JSON);
 ---
 
 ### delete()
-It assigns a request using the ``DELETE`` request method. This request accepts the request body. The setBody method is valid for all request methods that can be sent body.
+``DELETE`` istek metodunu kullanarak istek atar. Bu istek body kabul eder. setBody metodu body gönderilebilen tüm istek metodlarında geçerlidir.
 
 ```php
 $headers = [
@@ -494,7 +489,7 @@ $curl->delete('https://httpbin.org/delete', $headers, $body, $curl::JSON);
 ---
 
 ### patch()
-It assigns a request using the ``PATCH`` request method. This request accepts the request body. The setBody method is valid for all request methods that can send a body.
+``PATCH`` istek metodunu kullanarak istek atar. Bu istek body kabul eder. setBody metodu body gönderilebilen tüm istek metodlarında geçerlidir.
 
 ```php
 $headers = [
@@ -512,7 +507,7 @@ $curl->patch('https://httpbin.org/patch', $headers, $body, $curl::JSON);
 ---
 
 ### head()
-It assigns a request using the ``HEAD`` request method. This request does not accept body and does not return a response.
+``HEAD`` istek metodunu kullanarak istek atar. Bu istek body kabul etmez ve response döndürmez.
 
 ```php
 $headers = [
@@ -524,7 +519,7 @@ $curl->head('https://httpbin.org/head', $headers);
 ---
 
 ### connect()
-It assigns a request using the ``CONNECT`` request method. This request does not accept the request body.
+``CONNECT`` istek metodunu kullanarak istek atar. Bu istek body kabul etmez.
 
 ```php
 $headers = [
@@ -536,7 +531,7 @@ $curl->connect('https://httpbin.org/connect', $headers);
 ---
 
 ### options()
-It assigns a request using the ``OPTIONS`` request method. This request does not accept the request body.
+``OPTIONS`` istek metodunu kullanarak istek atar. Bu istek, body kabul etmez.
 
 ```php
 $headers = [
@@ -548,7 +543,7 @@ $curl->options('https://httpbin.org/options', $headers);
 ---
 
 ### trace()
-It assigns a request using the ``TRACE`` request method. This request does not accept body and does not return a response.
+``TRACE`` istek metodunu kullanarak istek atar. Bu istek, body kabul etmez ve response döndürmez.
 
 ```php
 $headers = [
@@ -560,20 +555,20 @@ $curl->trace('https://httpbin.org/options', $headers);
 ---
 
 ### exec()
-Running this method is mandatory after setting up any request. The request is not sent until the ``exec``` method is appended to the end of the request. This class works with the logic in the curl library. The reason for necessity is to make it easier to check the settings without sending the request.
+Bu metodun çalıştırılması herhangi bir isteğin ayarları yapıldıktan sonra  zorunludur. ``exec`` metodu istek sonuna eklenmeden istek gönderilmez. Bu sınıf curl kütüphanesindeki mantıkla çalışmaktadır. Zorunluluk sebebi, isteği göndermeden ayarların kontrolünü kolaylaştırmaktır.
 
 ```php
 $curl->exec();
 ```
-> for setting check, print $curl variable with print_r method without adding exec.
+> ayar kontrolü için exec eklemeden $curl değişkenini print_r metodu ile yazdırın.
 ---
 
-## Details of Response Methods
+## Cevap Metodlarının Detayları
 
 ### getInfo()
-It is a method that returns detailed information about curl that occurs after sending a curl request.
+Curl isteği gönderildikten sonra oluşan curl taraflı oluşan detaylı bilgileri döndüren metoddur.
 
-All information can be directly returned as array type.
+Tüm bilgiler array türünde direkt döndürülebilir.
 ```php
 $curl->getInfo();
 
@@ -623,7 +618,7 @@ Array
 )
 */
 ```
-or it can also return singular information.
+veya tek bir bilgi de döndürülebilir.
 ```php
 $curl->getInfo('http_code');
 
@@ -631,7 +626,7 @@ $curl->getInfo('http_code');
 ---
 
 ### getCurlError()
-If a curl-based error occurs after sending the request, this method returns the error.
+İstek gönderildikten sonra curl bazlı bir hata oluşursa bu metod hatayı döndürmektedir.
 
 ```php
 $curl->getCurlError();
@@ -639,35 +634,35 @@ $curl->getCurlError();
 ---
 
 ### getResponse()
-Returns the response from the request.
+İstekten alınan cevabı döndürür.
 
 ```php
 $curl->getResponse();
 ```
-or you can return it by deleting the extra spaces in the answer.
+veya cevaptaki fazla boşlukları silerek döndürebilirsiniz.
 ```php
 $curl->getResponse(true);
 ```
 ---
 
 ### getRespJson()
-If the response received from the request is in json format, it returns the json data by parsing it. The return type is object. Array type can also be set.
+İstekten alınan cevap eğer json formatında ise json verisini ayrıştırarak döndürür. Dönüş türü objedir. Array türü de ayarlanabilir.
 
 ```php
 $curl->getRespJson();
 ```
-or return json data as array.
+veya json verisini array olarak döndürün.
 ```php
 $curl->getRespJson(true);
 ```
-Can set flag for ``json_decode`` with 2nd argument.
+2. argümanla json_decode için flag ayarlanabilir.
 ```php
 $curl->getRespJson(false, JSON_PRETTY_PRINT);
 ```
 ---
 
 ### getEffective()
-If the request has a redirect, it returns the last source visited. For this, the setReturn method must be set to true.
+İstekte yönlendirme varsa son gidilen kaynağı döndürür. Bunun için setReturn metodu true ayarlanmalıdır.
 
 ```php
 $curl->getEffective();
@@ -677,7 +672,7 @@ $curl->getEffective();
 ---
 
 ### getHttpCode()
-Returns the http status code of the request.
+İsteğin http durum kodunu döndürür.
 
 ```php
 $curl->getHttpCode();
@@ -687,14 +682,14 @@ $curl->getHttpCode();
 ---
 
 ### getHeader()
-Returns any header returned from the request. Returns a singular value. The header id is added to the second argument. The header id argument returns data from the headers of the default last request.
+İstekten dönen herhangi bir header döndürür. Tekil değer verir. İkinci argümana header idsi eklenir. header id argümanı varsayılan son isteğin headerlarından veri döndürür.
 
 ```php
 $curl->getHeader('device_id');
 
 // e324h4e708f097febb40384a51as48
 ```
-or if there is a redirect, header can also be taken from the previous request. The header id is entered in the second argument.
+veya yönlendirme varsa önceki istekten header da alınabilir. 2. argümana header idsi girilir.
 ```php
 $curl->getHeader('device_id', 0);
 
@@ -703,7 +698,7 @@ $curl->getHeader('device_id', 0);
 ---
 
 ### getHeaders()
-Returns all headers returned from the request. Array returns value. The header id is added to the first argument. The header id argument returns data from the headers of the default last request.
+İstekten dönen tüm headerları döndürür. Array değer döndürür. İlk argümana header idsi eklenir. header id argümanı varsayılan son isteğin headerlarından veri döndürür.
 
 ```php
 $curl->getHeaders();
@@ -722,21 +717,21 @@ Array
 )
 */
 ```
-or
+veya
 ```php
 $curl->getHeaders(0);
 ```
 ---
 
 ### getCookie()
-Returns the specified cookies returned from the request response. The header id is valid in the 2nd argument.
+İstekten dönen cookilerden seçilmiş olanı döndürür. 2. argümanda header id geçerlidir.
 
 ```php
 $curl->getCookie('XSRF-TOKEN');
 
 // OWY4NmQwODE4ODRjN2Q2NTlhMmZlYWEwYzU1YWQwMTVhM2JmNGYxYjJiMGI4MjJjZDE1ZDZMGYwMGEwOA==
 ```
-or
+veya
 ```php
 $curl->getCookie('XSRF-TOKEN', 0);
 
@@ -745,14 +740,14 @@ $curl->getCookie('XSRF-TOKEN', 0);
 ---
 
 ### getCookiesRaw()
-Returns the cookies returned from the request in cookie format. header id is valid in 1st argument.
+İstekten dönen cookileri cookie formatında döndürür. 1. argümanda header id geçerlidir
 
 ```php
 $curl->getCookiesRaw();
 
 // laravel_session=eyJpdiI6InV5bGRQNFJ4c01TYjZwT0I0amxzS1E9PSIsInZhbHVlIjoiZFI2WWpVWGxmTldDcVJvVlwvbVJicXBxM0pjRkVRUlBRKzZWb1BkbzliZHBVdTlmUEV4UzZkaFVMbmlRTHNYczFOZm5HSWkwRXhjb3BJRGI1NGRyM2tnPT0iLCJtYWMiOiJjMjAwMWIyMGIxYmQwYzkxMGQyNGJhMDZmZDJiNThjNGZhMTUyZWVjZDlkNjg5ZWVjYjY2MGE1ZTlmZDAxOGNmIn0=
 ```
-or
+veya
 ```php
 $curl->getCookiesRaw(0);
 
@@ -761,7 +756,7 @@ $curl->getCookiesRaw(0);
 ---
 
 ### getCookiesArray()
-Returns the cookies returned from the request. The header id is valid in the 1st argument. As the name suggests, the returned data type is array.
+İstekten dönen cookileri döndürür. 1. argümanda header id geçerlidir. Adından da anlaşılacağ gibi dönen veri türü arraydir.
 
 ```php
 $curl->getCookiesArray();
@@ -773,7 +768,7 @@ Array
 )
 */
 ```
-or
+veya
 ```php
 $curl->getCookiesArray(0);
 
@@ -787,7 +782,7 @@ Array
 ---
 
 ### getBetween()
-Finds and returns text in the specified range from the response received from the request. Returns singular string data.
+İstekten alınan cevaptan, belirtilen aralıktaki metni bulup döndürür. Tekil değerinde string veri döndürür.
 
 ```php
 
@@ -797,14 +792,14 @@ $curl->getBetween('<p>', '</p>');
 
 //asd
 ```
-The 3rd argument is equal to the 1st argument of the ``getResponse`` method. It deletes the extra spaces in the response.
+3. argüman getResponse metodunun 1. argümanına eşittir. Cevaptaki fazla boşlukları siler.
 ```php
 $curl->getBetween('<p>', '</p>', true);
 ```
 ---
 
 ### getBetweens()
-Finds and returns text in the specified range from the response received from the request. Returns multiple array data. Gets all of the specified ranges if more than one.
+İstekten alınan cevaptan, belirtilen aralıktaki metni bulup döndürür. Çoğul değerinde array veri döndürür. Belirtilen aralıklar birden fazla hepsini alır.
 
 ```php
 /*
@@ -821,7 +816,7 @@ Array
 )
 */
 ```
-The 3rd argument is equal to the 1st argument of the ``getResponse ``method. It deletes the extra spaces in the response.
+3. argüman getResponse metodunun 1. argümanına eşittir. Cevaptaki fazla boşlukları siler.
 ```php
 // <p>test</p><p>test 2</p>
 $curl->getBetweens('<p>', '</p>', true);
@@ -835,16 +830,17 @@ Array
 ```
 ---
 
-## Details of Other Methods
+## Diğer Metodların Detayları
 
 ### find()
-It performs a text search in the response of the request, and returns an object type result if any. You can search for singular information as well as plural. The default source is the data retrieved from the ``getResponse`` method. Different source can be added to the optional 2nd argument.
+İsteğin cevabında bir metin araması yapar varsa obje türünde sonuç döndürür. Tekil bilgi arama yapılabildiği gibi çoğul da yapılabilir. Varsayılan kaynak ``getResponse`` metodundan alınan veridir. İsteğe bağlı 2. argümana farklı kaynak eklenebilir.
 
-title tag check
+title tagı kontrolü
 ```php
-$find = $curl->find("<title>Homepage</title>");
+$find = $curl->find("<title>Anasayfa</title>");
 
 if ($find->result) {
+    echo 'Bulundu'.PHP_EOL;
     echo 'Bulunan: '.$find->finded;
 }
 
@@ -856,18 +852,19 @@ stdClass Object
 )
 */
 ```
-or multiple searches.
+veya çoklu arama yapabilir.
 ```php
-$found = [
-    "<title>Homepage</title>",
-    "Homepage",
-    "Topic is added.",
+$aranacaklar = [
+    "<title>Anasayfa</title>",
+    "Anasayfa",
+    "Konu eklendi.",
 
 ];
-$find = $curl->find($found);
+$find = $curl->find($aranacaklar);
 
 if ($find->result) {
-    echo 'Founds: '; print_r($find->finded);
+    echo 'Bulundu'.PHP_EOL;
+    echo 'Bulunanlar: '; print_r($find->finded);
     
 }
 
@@ -877,29 +874,30 @@ stdClass Object
     [result] => 1
     [finded] => Array
         (
-            [0] => <title>Homepage</title>
-            [1] => Homepage
+            [0] => <title>Anasayfa</title>
+            [1] => Anasayfa
         )
 
 )
 */
 ```
 
-or a different source can be added.
+veya farklı kaynak eklenebilir.
 ```php
-$found = [
-    "<title>Homepage</title>",
-    "Homepage",
-    "Topic is added.",
+$aranacaklar = [
+    "<title>Anasayfa</title>",
+    "Anasayfa",
+    "Konu eklendi.",
 
 ];
 
-$string = "<title>Homepage</title>Topic is added.";
+$metin = "<title>Anasayfa</title>Konu eklendi.";
 
-$find = $curl->find($found, $string);
+$find = $curl->find($aranacaklar, $metin);
 
 if ($find->result) {
-    echo 'Found: '; print_r($find->finded);
+    echo 'Bulundu'.PHP_EOL;
+    echo 'Bulunanlar: '; print_r($find->finded);
     
 }
 
@@ -909,8 +907,8 @@ stdClass Object
     [result] => 1
     [finded] => Array
         (
-            [0] => <title>Homepage</title>
-            [1] => Homepage
+            [0] => <title>Anasayfa</title>
+            [1] => Anasayfa
         )
 
 )
@@ -919,7 +917,7 @@ stdClass Object
 ---
 
 ### getOpt()
-Returns the values ​​of constants set with the ``setOpt`` method. Names do not contain the names of constants. This is how the curl library offers.
+ ``setOpt`` metoduyla ayarlanan sabitlerin değerlerini döndürür. Keyler sabitlerin adını içermez. Curl kütüphanesi böyle sunmaktadır.
 
 ```php
 $curl->getOpt();
@@ -936,7 +934,7 @@ Array
 )
 */
 ```
-or
+veya
 ```php
 $curl->getOpt(CURLOPT_URL);
 
@@ -944,10 +942,10 @@ $curl->getOpt(CURLOPT_URL);
 ```
 ---
 
-## Details of Constants
+## Sabitlerin Detayları
 
 ### RAW
-It allows it to detect the body data to be sent in the request as plain text.
+İstekte gönderilecek body verisini düz metin olarak algılamasını sağlar.
 
 ```php
 $curl::RAW;
@@ -955,7 +953,7 @@ $curl::RAW;
 ---
 
 ### JSON
-It makes it detect the body data to be sent in the request as json and converts it to json data.
+İstekte gönderilecek body verisini json olarak algılamasını sağlar ve json verisine dönüştürür.
 
 ```php
 $curl::JSON;
@@ -963,7 +961,7 @@ $curl::JSON;
 ---
 
 ### QUERY
-It makes it detect the body data to be sent in the request as a form and converts it to form data.
+İstekte gönderilecek body verisini form olarak algılamasını sağlar ve form verisine dönüştürür.
 
 ```php
 $curl::QUERY;
