@@ -1,6 +1,6 @@
 # PHP Curl
-[![en](https://img.shields.io/badge/lang-en-red.svg)](https://github.com/0x1881/curl/blob/master/README.md)
-[![tr](https://img.shields.io/badge/lang-tr-green.svg)](https://github.com/0x1881/curl/blob/master/README.tr.md)
+[![en](https://img.shields.io/badge/lang-en-red.svg)](https://github.com/0x1881/curl/blob/main/README.md)
+[![tr](https://img.shields.io/badge/lang-tr-green.svg)](https://github.com/0x1881/curl/blob/main/README.tr.md)
 
 This package can send HTTP requests to a given site using Curl.
 
