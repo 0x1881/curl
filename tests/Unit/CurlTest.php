@@ -3,7 +3,6 @@
 namespace Tests\Unit\C4N;
 
 use C4N\Curl;
-use C4N\CurlException;
 use PHPUnit\Framework\TestCase;
 
 /**

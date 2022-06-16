@@ -1,10 +1,7 @@
 <?php
-
 namespace C4N;
 
-use C4N\CurlException;
 use ReflectionClass;
-use stdClass;
 
 /**
  * Curl class
@@ -69,11 +66,11 @@ class Curl
 
     /**
      * @return void 
-     * @throws CurlException 
+     * @throws Exception 
      */
     public function __construct()
     {
-        if (!extension_loaded('curl')) throw new CurlException("cURL extension is not loaded");
+        if (!extension_loaded('curl')) throw new \Exception("cURL extension is not loaded");
         $this->setDefault();
     }
 
@@ -90,13 +87,13 @@ class Curl
     /**
      * Request default options set function
      * 
-     * @return void 
+     * @return $this
      */
     public function setDefault()
     {
-        $this->req = new \stdClass();
+        $this->req = (object)[];
         $this->req->ch = curl_init();
-        $this->res = new \stdClass();
+        $this->res = (object)[];
 
         $this->setOpt(\CURLOPT_HEADER, true);
         $this->setOpt(\CURLOPT_RETURNTRANSFER, true);
@@ -109,19 +106,19 @@ class Curl
      * 
      * @param string $method 
      * @return $this
-     * @throws C4NException 
+     * @throws Exception 
      */
     public function setMethod(string $method)
     {
         if (isset($this->req->method) && !empty($this->req->method)) {
-            throw new CurlException("Request method is already set");
+            throw new \Exception("Request method is already set");
         } else {
             $methodUP = strtoupper($method);
             if (isset(self::$method_properties[$methodUP])) {
                 $this->req->method = $methodUP;
                 $this->setOpt(\CURLOPT_CUSTOMREQUEST, $this->req->method);
             } else {
-                throw new CurlException("Method {$method} is not supported");
+                throw new \Exception("Method {$method} is not supported");
             }
         }
         return $this;
@@ -147,7 +144,7 @@ class Curl
      * @param mixed|null $header 
      * @param string $value 
      * @return $this 
-     * @throws C4NException 
+     * @throws Exception 
      */
     public function setHeader($header = null, string $value = "header_no_value")
     {
@@ -176,7 +173,7 @@ class Curl
                 $this->req->headers = $new_header;
             }
         } else {
-            throw new CurlException("Header {$header} is not valid");
+            throw new \Exception("Header {$header} is not valid");
         }
 
         if (isset($this->req->headers) && (is_array($this->req->headers) && count($this->req->headers) > 0)) {
@@ -194,12 +191,12 @@ class Curl
      * @param mixed|null $body 
      * @param string $type 
      * @return $this 
-     * @throws C4NException 
+     * @throws Exception 
      */
     public function setBody($body = null, $type = self::RAW)
     {
         if (isset($this->req->body) && !empty($this->req->body)) {
-            throw new CurlException("Request body is already set");
+            throw new \Exception("Request body is already set");
         } else {
             if (self::$method_properties[$this->req->method]['req_body']) {
                 if (is_array($body) && $type == self::RAW) {
@@ -212,7 +209,7 @@ class Curl
                 }
                 $this->setOpt(\CURLOPT_POSTFIELDS, $this->req->body);
             } else {
-                throw new CurlException("Method {$this->req->method} does not support request body");
+                throw new \Exception("Method {$this->req->method} does not support request body");
             }
         }
 
@@ -227,7 +224,6 @@ class Curl
      * @param mixed $body 
      * @param string $body_type 
      * @return $this 
-     * @throws C4NException 
      */
     public function send(string $method, string $url, array $headers = [], $body = null, $body_type = self::RAW)
     {
@@ -248,7 +244,6 @@ class Curl
      * @param mixed $url 
      * @param array $headers 
      * @return $this 
-     * @throws C4NException 
      */
     public function get($url, $headers = [])
     {
@@ -384,7 +379,7 @@ class Curl
      */
     public function exec(): void
     {
-        $response = curl_exec($this->req->ch);
+        $response = (string)curl_exec($this->req->ch);
         $header_size = $this->curlGetInfo(\CURLINFO_HEADER_SIZE);
         $http_code = $this->curlGetInfo(\CURLINFO_HTTP_CODE);
         $effective_url = $this->curlGetInfo(\CURLINFO_EFFECTIVE_URL);
@@ -442,6 +437,7 @@ class Curl
      * @param mixed $cookie 
      * @param mixed $value 
      * @return $this 
+     * @throws Exception 
      */
     public function setCookie($cookie, $value = 'cookie_no_value')
     {
@@ -596,6 +592,7 @@ class Curl
      * @param mixed $port
      * @param bool $autoParse
      * @return $this 
+     * @throws Exception 
      */
     public function setProxy(string $proxy, $port_autoParse = true)
     {
@@ -606,13 +603,13 @@ class Curl
             if (count($proxy_array) > 0 && is_array($proxy_array)) {
                 extract($proxy_array);
             } else {
-                throw new CurlException("Proxy parse error");
+                throw new \Exception("Proxy parse error");
             }
 
             if (isset($host) && !empty($host)) {
                 $this->setOpt(\CURLOPT_PROXY, $host);
             } else {
-                throw new CurlException("Proxy host error");
+                throw new \Exception("Proxy host error");
             }
 
             if (isset($port) && !empty($port)) {
@@ -724,7 +721,7 @@ class Curl
      * Getting request response
      * 
      * @return mixed 
-     * @throws C4NException 
+     * @throws Exception 
      */
     public function getResponse(bool $remove_line_break = false)
     {
@@ -734,7 +731,7 @@ class Curl
             }
             return $this->res->body;
         } else {
-            throw new CurlException("Method {$this->req->method} does not support response body");
+            throw new \Exception("Method {$this->req->method} does not support response body");
         }
     }
 
@@ -744,6 +741,7 @@ class Curl
      * @param bool $array
      * @param int $flags
      * @return mixed
+     * @throws Exception
      */
     public function getRespJson(bool $array = false, $flags = 0)
     {
@@ -752,7 +750,7 @@ class Curl
         if ((!$array && is_object($json)) || ($array && is_array($json))) {
             return $json;
         } else {
-            throw new CurlException("Response json parse error");
+            throw new \Exception("Response json parse error");
         }
     }
 
@@ -781,15 +779,16 @@ class Curl
      * 
      * @param string $header 
      * @param int|null $header_id 
-     * @return mixed 
+     * @return mixed
+     * @throws Exception
      */
     public function getHeader(string $header, int $header_id = null)
     {
-        $headers = $this->getHeaders($header_id);
+        $headers = (array)$this->getHeaders($header_id);
         if (\array_key_exists($header, $headers)) {
             return $headers[$header];
         } else {
-            throw new CurlException("Header {$header} not found");
+            throw new \Exception("Header {$header} not found");
         }
     }
 
@@ -798,6 +797,7 @@ class Curl
      * 
      * @param int|null $header_id 
      * @return mixed 
+     * @throws Exception
      */
     public function getHeaders(int $header_id = null)
     {
@@ -805,7 +805,7 @@ class Curl
             $header = end($this->res->headers_array);
         } else {
             if (!isset($this->res->headers_array[$header_id])) {
-                throw new CurlException("Header id {$header_id} not found");
+                throw new \Exception("Header id {$header_id} not found");
             }
             $header = $this->res->headers_array[$header_id];
         }
@@ -818,6 +818,7 @@ class Curl
      * @param string $cookie
      * @param int|null $header_id
      * @return mixed
+     * @throws Exception
      */
     public function getCookie(string $cookie, int $header_id = null)
     {
@@ -825,7 +826,7 @@ class Curl
         if (\array_key_exists($cookie, $cookies)) {
             return $cookies[$cookie];
         } else {
-            throw new CurlException("Cookie {$cookie} not found");
+            throw new \Exception("Cookie {$cookie} not found");
         }
     }
 
@@ -846,6 +847,7 @@ class Curl
      * 
      * @param int|null $header_id
      * @return mixed
+     * @throws Exception
      */
     public function getCookiesArray(int $header_id = null): array
     {
@@ -853,16 +855,16 @@ class Curl
             $last_array = end($this->res->headers_array);
             $cookie_check = array_key_exists('set_cookie', $last_array);
             if ($cookie_check) $cookies = $last_array['set_cookie'];
-            else throw new CurlException("Cookies not found");
+            else throw new \Exception("Cookies not found");
         } else {
             if (!isset($this->res->headers_array[$header_id])) {
-                throw new CurlException("Header id {$header_id} not found");
+                throw new \Exception("Header id {$header_id} not found");
             }
 
             $select_array = $this->res->headers_array[$header_id];
             $cookie_check = array_key_exists('set_cookie', $select_array);
             if ($cookie_check) $cookies = $select_array['set_cookie'];
-            else throw new CurlException("Cookies not found");
+            else throw new \Exception("Cookies not found");
         }
         return $cookies ?? [];
     }
@@ -877,7 +879,7 @@ class Curl
      */
     public function find($search_datas, $source = null)
     {
-        $json = new stdClass();
+        $json = (object)[];
         $json->result = false;
         if (\is_null($source)) {
             $source = $this->getResponse();
