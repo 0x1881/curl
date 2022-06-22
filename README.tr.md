@@ -792,27 +792,39 @@ Array
 ---
 
 ### getBetween()
-İstekten alınan cevaptan, belirtilen aralıktaki metni bulup döndürür. Tekil değerinde string veri döndürür.
+İstekten alınan cevaptan, belirtilen aralıktaki metni bulup döndürür. İstenirse istekten alınan cevap yerine aranacak kaynak belirtilebilir. Tekil değerinde string veri döndürür.
 
 ```php
 
-// <p>asd</p>
+// Response: <p>asd</p>
 
 $curl->getBetween('<p>', '</p>');
 
 //asd
 ```
-3. argüman getResponse metodunun 1. argümanına eşittir. Cevaptaki fazla boşlukları siler.
+3. argüman ile farklı bir kaynak belirtilir. İstek cevabında yapılan aramayı iptal eder.
 ```php
-$curl->getBetween('<p>', '</p>', true);
+$curl->getBetween('<p>', '</p>', '<p>string değerindeki veri</p>');
+
+//string değerindeki veri
+```
+---
+4. argüman getResponse metodunun 1. argümanına eşittir. Cevaptaki fazla boşlukları siler.
+```php
+$curl->getBetween('<p>', '</p>', $curl->getResponse(), true);
+$curl->getBetween('<p>', '</p>', $curl->getResponse(true));
+$curl->getBetween('<p>', '</p>', '<p>string değerindeki veri</p>', true);
+
+//string değerindeki veri
 ```
 ---
 
 ### getBetweens()
-İstekten alınan cevaptan, belirtilen aralıktaki metni bulup döndürür. Çoğul değerinde array veri döndürür. Belirtilen aralıklar birden fazla hepsini alır.
+İstekten alınan cevaptan, belirtilen aralıktaki metni bulup döndürür. İstenirse istekten alınan cevap yerine aranacak kaynak belirtilebilir. Çoğul değerinde array veri döndürür. Belirtilen aralıklar birden fazla hepsini alır.
 
 ```php
 /*
+Response:
 <p>test</p>
 <p>test 2</p>
 */
@@ -826,10 +838,24 @@ Array
 )
 */
 ```
-3. argüman getResponse metodunun 1. argümanına eşittir. Cevaptaki fazla boşlukları siler.
+3. argüman ile farklı bir kaynak belirtilir. İstek cevabında yapılan aramayı iptal eder.
+```php
+$curl->getBetweens('<p>', '</p>', '<p>herhangi bir şeyler</p><p>selam dost</p>');
+
+/*
+Array
+(
+    [0] => herhangi bir şeyler
+    [1] => selam dost
+)
+*/
+```
+4. argüman getResponse metodunun 1. argümanına eşittir. Cevaptaki fazla boşlukları siler.
 ```php
 // <p>test</p><p>test 2</p>
-$curl->getBetweens('<p>', '</p>', true);
+$curl->getBetweens('<p>', '</p>', $curl->getResponse(), true);
+$curl->getBetweens('<p>', '</p>', $curl->getResponse(true));
+$curl->getBetweens('<p>', '</p>', "<p>test</p><p>test 2</p>", true);
 /*
 Array
 (
@@ -904,6 +930,38 @@ $aranacaklar = [
 $metin = "<title>Anasayfa</title>Konu eklendi.";
 
 $find = $curl->find($aranacaklar, $metin);
+
+if ($find->result) {
+    echo 'Bulundu'.PHP_EOL;
+    echo 'Bulunanlar: '; print_r($find->finded);
+    
+}
+
+/*
+stdClass Object
+(
+    [result] => 1
+    [finded] => Array
+        (
+            [0] => <title>Anasayfa</title>
+            [1] => Anasayfa
+        )
+
+)
+*/
+```
+3. argüman getResponse metodunun 1. argümanına eşittir. Cevaptaki fazla boşlukları siler.
+```php
+$aranacaklar = [
+    "<title>Anasayfa</title>",
+    "Anasayfa",
+    "Konu eklendi.",
+
+];
+
+$metin = "<title>Anasayfa</title>Konu eklendi.";
+
+$find = $curl->find($aranacaklar, $metin, true);
 
 if ($find->result) {
     echo 'Bulundu'.PHP_EOL;
