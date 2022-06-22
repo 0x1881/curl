@@ -259,6 +259,7 @@ class Curl
      * @param mixed $url
      * @param array $headers
      * @param string|null $body
+     * @param string $body_type
      * @return $this 
      */
     public function post($url, $headers = [], $body = null, $body_type = self::RAW)
@@ -275,6 +276,7 @@ class Curl
      * @param mixed $url
      * @param array $headers
      * @param mixed|null $body
+     * @param string $body_type
      * @return $this 
      */
     public function put($url, $headers = [], $body = null, $body_type = self::RAW)
@@ -290,6 +292,7 @@ class Curl
      * @param mixed $url
      * @param array $headers
      * @param mixed|null $body
+     * @param string $body_type
      * @return $this 
      */
     public function delete($url, $headers = [], $body = null, $body_type = self::RAW)
@@ -305,6 +308,7 @@ class Curl
      * @param mixed $url
      * @param array $headers
      * @param string|null $body
+     * @param string $body_type
      * @return $this 
      */
     public function patch($url, $headers = [], $body = null, $body_type = self::RAW)
@@ -875,14 +879,14 @@ class Curl
      * @param mixed $search_datas 
      * @param mixed $source 
      * @return mixed 
-     * @throws C4NException 
+     * @throws Exception 
      */
-    public function find($search_datas, $source = null)
+    public function find($search_datas, $source = null, bool $remove_line_break = false)
     {
         $json = (object)[];
         $json->result = false;
         if (\is_null($source)) {
-            $source = $this->getResponse();
+            $source = $this->getResponse($remove_line_break);
         }
 
         if (\is_array($search_datas)) {
@@ -905,33 +909,42 @@ class Curl
     }
 
     /**
-     * Getting string from request response
+     * Getting string from request response or text data
      * 
      * @param string $start
      * @param string $end
+     * @param string $source
+     * @param bool $remove_line_break
      * @return string
      */
-    public function getBetween(string $start = '', string $end = '', bool $remove_line_break = false): string
+    public function getBetween(string $start = '', string $end = '', string $source = null, bool $remove_line_break = false): string
     {
-        $str = $this->getResponse($remove_line_break);
-        $string = ' ' . $str;
-        $ini = strpos($string, $start);
+        if (\is_null($source)) {
+            $source = $this->getResponse($remove_line_break);
+        }
+        $source = ' ' . $source;
+        $ini = strpos($source, $start);
         if ($ini == 0) return '';
         $ini += strlen($start);
-        $len = strpos($string, $end, $ini) - $ini;
-        return substr($string, $ini, $len);
+        $len = strpos($source, $end, $ini) - $ini;
+        return substr($source, $ini, $len);
     }
 
     /**
-     * Getting strings from request response
+     * Getting strings from request response or text data
      * 
      * @param string $start 
      * @param string $end 
+     * @param string $source
+     * @param bool $remove_line_break
      * @return array 
      */
-    public function getBetweens(string $start = '', string $end = '', bool $remove_line_break = false): array
+    public function getBetweens(string $start = '', string $end = '', string $source = null, bool $remove_line_break = false): array
     {
-        $n = explode($start, $this->getResponse($remove_line_break));
+        if (\is_null($source)) {
+            $source = $this->getResponse($remove_line_break);
+        }
+        $n = explode($start, $source);
         $result = [];
         foreach ($n as $val) {
             $pos = strpos($val, $end);
