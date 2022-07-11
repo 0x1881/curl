@@ -751,10 +751,10 @@ class Curl
     {
         $json = json_decode($this->getResponse(), $array, 512, $flags);
 
-        if ((!$array && is_object($json)) || ($array && is_array($json))) {
+        if (json_last_error() === JSON_ERROR_NONE) {
             return $json;
         } else {
-            throw new \Exception("Response json parse error");
+            throw new \Exception("Response json parse error: ". json_last_error_msg());
         }
     }
 
@@ -843,7 +843,8 @@ class Curl
     public function getCookiesRaw(int $header_id = null): string
     {
         $cookies = $this->getCookiesArray($header_id);
-        return http_build_query($cookies, '', '; ');
+        $cookies = array_map(function($v, $k){return "$k=$v;";}, $cookies, array_keys($cookies));
+        return implode(' ', $cookies);
     }
 
     /**
@@ -1007,7 +1008,7 @@ class Curl
     {
         $regex  = ['/\>[^\S ]+/s' => '>', '/[^\S ]+\</s' => '<', '/(\s)+/s' => '\\1'];
         $buffer = \preg_replace(array_keys($regex), array_values($regex), $buffer);
-        $re = '%(?>[^\S ]\s*| \s{2,})(?=(?:(?:[^<]++| <(?!/?(?:textarea|pre)\b))*+)(?:<(?>textarea|pre)\b| \z))%ix';
+        $re = '%(?>[^\S ]\s*|\s{2,})(?=(?:(?:[^<]++|<(?!/?(?:textarea|pre)\b))*+)(?:<(?>textarea|pre)\b|\z))%ix';
         $buffer = \preg_replace($re, " ", $buffer);
         return $buffer;
     }
