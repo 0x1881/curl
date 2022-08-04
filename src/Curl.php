@@ -882,7 +882,7 @@ class Curl
      * @return mixed 
      * @throws Exception 
      */
-    public function find($search_datas, $source = null, bool $remove_line_break = false)
+    public function find($search_datas, $source = null, bool $remove_line_break = false): object
     {
         $json = (object)[];
         $json->result = false;
@@ -893,20 +893,40 @@ class Curl
         if (\is_array($search_datas)) {
             foreach ($search_datas as $search_data) {
                 $search_data_regex = \preg_quote($search_data, '/');
-                if (\preg_match('/' . $search_data_regex . '/si', $source) || $this->contains($search_data_regex, $source)) {
+                if (\preg_match('/' . $search_data_regex . '/si', $source) || $this->contains($search_data)) {
                     $json->result = true;
                     $json->finded[] = $search_data;
                 }
             }
         } else {
             $search_data = \preg_quote($search_datas, '/');
-            if (\preg_match('/' . $search_data . '/si', $source) || $this->contains($search_data, $source)) {
+            if (\preg_match('/' . $search_data . '/si', $source) || $this->contains($search_data)) {
                 $json->result = true;
                 $json->finded = $search_datas;
             }
         }
 
         return $json;
+    }
+    
+    /**
+     * Find string from text
+     * 
+     * @param mixed $texttosearch 
+     * @param mixed $source 
+     * @return bool 
+     */
+    public function contains($search_data, $source = null): bool
+    {
+        if (\is_null($source)) {
+            $source = $this->getResponse();
+        }
+
+        if (\function_exists('str_contains')) {
+            return str_contains($source, $search_data);
+        }
+        
+        return strpos($source, $search_data) !== false;
     }
 
     /**
@@ -1011,18 +1031,6 @@ class Curl
         $re = '%(?>[^\S ]\s*|\s{2,})(?=(?:(?:[^<]++|<(?!/?(?:textarea|pre)\b))*+)(?:<(?>textarea|pre)\b|\z))%ix';
         $buffer = \preg_replace($re, " ", $buffer);
         return $buffer;
-    }
-
-    /**
-     * Find string from text
-     * 
-     * @param mixed $needle 
-     * @param mixed $haystack 
-     * @return bool 
-     */
-    private function contains($needle, $haystack)
-    {
-        return strpos($haystack, $needle) !== false;
     }
 
     /**
