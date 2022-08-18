@@ -893,14 +893,14 @@ class Curl
         if (\is_array($search_datas)) {
             foreach ($search_datas as $search_data) {
                 $search_data_regex = \preg_quote($search_data, '/');
-                if (\preg_match('/' . $search_data_regex . '/si', $source) || $this->contains($search_data)) {
+                if (\preg_match('/' . $search_data_regex . '/si', $source) || $this->contains($search_data, $source)) {
                     $json->result = true;
                     $json->finded[] = $search_data;
                 }
             }
         } else {
             $search_data = \preg_quote($search_datas, '/');
-            if (\preg_match('/' . $search_data . '/si', $source) || $this->contains($search_data)) {
+            if (\preg_match('/' . $search_data . '/si', $source) || $this->contains($search_data, $source)) {
                 $json->result = true;
                 $json->finded = $search_datas;
             }
