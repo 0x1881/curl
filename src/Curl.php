@@ -20,7 +20,7 @@ class Curl
     /**
      * Proxy parser regex
      */
-    private const PROXY_REGEX = '/^(?:(?<method>[http|https|socks4|socks5]*?):\/\/)?(?:(?<username>\w+)(?::(?<password>\w*))@)?(?<host>(?!\-)(?:(?:[a-zA-Z\d][a-zA-Z\d\-]{0,61})?[a-zA-Z\d]\.){1,126}(?!\d+)[a-zA-Z\d]{1,63}|((?:\d{1,3})(?:\.\d{1,3}){3}))(?::(?<port>\d{1,5}))$/ms';
+    private const PROXY_REGEX = '/^(?:(?<method>[http|https|socks4|socks5]*?):\/\/)?(?:(?<username>[\w0-9-_]*)(?::(?<password>[\w0-9-_]*))@)?(?<host>(?!\-)(?:(?:[a-zA-Z\d][a-zA-Z\d\-]{0,61})?[a-zA-Z\d]\.){1,126}(?!\d+)[a-zA-Z\d]{1,63}|((?:\d{1,3})(?:\.\d{1,3}){3}))(?::(?<port>\d{1,5}))$/ms';
 
     /**
      * Curl request method properties
@@ -938,17 +938,29 @@ class Curl
      * @param bool $remove_line_break
      * @return string
      */
-    public function getBetween(string $start = '', string $end = '', string $source = null, bool $remove_line_break = false): string
+    public function getBetween(string $start = '', string $end = '', string $source = null, bool $include_delimiters = false, bool $remove_line_break = false, int &$offset = 0): ?string
     {
-        if (\is_null($source)) {
-            $source = $this->getResponse($remove_line_break);
-        }
-        $source = ' ' . $source;
-        $ini = strpos($source, $start);
-        if ($ini == 0) return '';
-        $ini += strlen($start);
-        $len = strpos($source, $end, $ini) - $ini;
-        return substr($source, $ini, $len);
+        if ($source === '' || $start === '' || $end === '') return null;
+
+        if (\is_null($source)) $source = $this->getResponse($remove_line_break);
+
+        $startLength = strlen($start);
+        $endLength = strlen($end);
+
+        $startPos = strpos($source, $start, $offset);
+        if ($startPos === false) return null;
+
+        $endPos = strpos($source, $end, $startPos + $startLength);
+        if ($endPos === false) return null;
+
+        $length = $endPos - $startPos + ($include_delimiters ? $endLength : -$startLength);
+        if (!$length) return null;
+
+        $offset = $startPos + ($include_delimiters ? 0 : $startLength);
+
+        $result = substr($source, $offset, $length);
+
+        return ($result !== false ? $result : null);
     }
 
     /**
@@ -960,20 +972,22 @@ class Curl
      * @param bool $remove_line_break
      * @return array 
      */
-    public function getBetweens(string $start = '', string $end = '', string $source = null, bool $remove_line_break = false): array
+    public function getBetweens(string $start = '', string $end = '', string $source = null, bool $include_delimiters = false, bool $remove_line_break = false, int &$offset = 0): ?array
     {
-        if (\is_null($source)) {
-            $source = $this->getResponse($remove_line_break);
+        if (\is_null($source)) $source = $this->getResponse($remove_line_break);
+
+        $strings = [];
+        $length = strlen($source);
+
+        while ($offset < $length) {
+            $found = $this->getBetween($start, $end, $source, $include_delimiters, $remove_line_break, $offset);
+            if ($found === null) break;
+
+            $strings[] = $found;
+            $offset += strlen($include_delimiters ? $found : $start . $found . $end); // move offset to the end of the newfound string
         }
-        $n = explode($start, $source);
-        $result = [];
-        foreach ($n as $val) {
-            $pos = strpos($val, $end);
-            if ($pos !== false) {
-                $result[] = substr($val, 0, $pos);
-            }
-        }
-        return $result ?? [];
+
+        return $strings;
     }
 
     /**
